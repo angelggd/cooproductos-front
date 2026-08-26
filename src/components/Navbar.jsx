@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Link } from "react-router-dom"
+
 
 export default function Navbar() {
   // Estado para controlar abrir/cerrar el menú en móviles
@@ -22,8 +24,10 @@ export default function Navbar() {
           CooProductos
         </h1>
         
+        
         {/* Navegación de Escritorio (Oculta en móviles) */}
         <nav className="hidden md:flex gap-6">
+          
           {navLinks.map((link) => (
             <a 
               key={link.name} 
@@ -32,7 +36,8 @@ export default function Navbar() {
             >
               {link.name}
             </a>
-          ))}
+          ))}       
+          <Link to='/auth' className='hover:text-accent transition-colors font-medium'>Login</Link>
         </nav>
 
         {/* Botón de Hamburguesa para Móviles */}
@@ -58,10 +63,11 @@ export default function Navbar() {
       {/* Menú Desplegable para Móviles */}
       <div 
         className={`md:hidden bg-primary overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-64 border-t border-secondary/30' : 'max-h-0'
+          isOpen ? 'max-h-70 border-t border-secondary/30' : 'max-h-0'
         }`}
       >
         <nav className="flex flex-col px-4 py-2">
+          <Link to='/auth' className='hover:text-accent transition-colors font-medium'>Login</Link>
           {navLinks.map((link) => (
             <a 
               key={link.name} 
@@ -71,7 +77,9 @@ export default function Navbar() {
             >
               {link.name}
             </a>
+            
           ))}
+          
         </nav>
       </div>
     </header>
