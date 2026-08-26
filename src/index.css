@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@theme {
+/* Nuevos Tonos Verdes Corporativos */
+  --color-primary: #1B4D3E;    /* Verde bosque oscuro y sobrio para la marca, headers y footer */
+  --color-secondary: #2C6B56;  /* Verde intermedio elegante para secciones y detalles de apoyo */
+  --color-accent: #4E9F3D;     /* Verde vibrante y fresco para botones, CTAs y elementos llamativos */
+  --color-background: #F4F8F6; /* Fondo general con un sutil matiz verdoso muy limpio y claro */
+
+  /* Tipografía */
+  --font-sans: "Inter", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
