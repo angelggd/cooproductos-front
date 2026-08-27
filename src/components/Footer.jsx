@@ -64,7 +64,7 @@ export default function Footer() {
 
         {/* Línea divisoria y Copyright */}
         <div className="border-t border-white/10 pt-8 text-center text-sm text-gray-400">
-          <p>© {new Date().getFullYear()} CooProductos. Todos los derechos reservados. Desarrollado con React y Tailwind CSS.</p>
+          <p>© {new Date().getFullYear()} CooProductos. Todos los derechos reservados. Desarrollado por beesoft.</p>
         </div>
 
       </div>
