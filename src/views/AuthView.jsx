@@ -1,6 +1,7 @@
 // src/views/AuthView.jsx
 import { useState } from 'react';
 import Login from '../components/auth/Login';
+import Register from '../components/auth/Register';
 
 export default function AuthView() {
   const [currentView, setCurrentView] = useState('login'); // 'login' | 'register'
@@ -12,16 +13,7 @@ export default function AuthView() {
         {currentView === 'login' ? (
           <Login onSwitchToRegister={() => setCurrentView('register')} />
         ) : (
-          <div className="p-8 text-center text-gray-600">
-            <h3 className="text-2xl font-bold text-primary mb-4">Registro</h3>
-            <p className="mb-4">Formulario de registro en construcción.</p>
-            <button 
-              onClick={() => setCurrentView('login')}
-              className="text-secondary font-semibold hover:text-accent transition-colors"
-            >
-              ← Volver al inicio de sesión
-            </button>
-          </div>
+          <Register onSwitchToLogin={() => setCurrentView('login')} />
         )}
       </div>
     </div>
