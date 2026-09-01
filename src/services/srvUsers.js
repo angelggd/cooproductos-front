@@ -73,3 +73,58 @@ export const loginUser = async(query) => {
         return { status: 600, message: "Unhandler error", error: error }
     }
 };
+
+//esta funcion actualiza la informacion del usuario
+export const updateUser = async(datos, id) => {
+    try {
+        const response = await fetch(`${endpoints.users}/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datos)
+
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+//esta funcion actualiza la clave del usuario
+export const cambiarClaveUser = async(datos, id) => {
+    try {
+        const response = await fetch(`${endpoints.users}/password/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datos)
+
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+//esta funcion cambia el estado del usuario
+export const toggleUser = async(id) => {
+    try {
+        const response = await fetch(`${endpoints.users}/toggle/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
