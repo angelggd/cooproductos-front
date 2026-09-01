@@ -9,4 +9,5 @@ export const endpoints = {
    creditos: `${BASE_URL}/creditos`,
    solicitudes: `${BASE_URL}/solicitudes`,
    mailers: `${BASE_URL}/mailers`,
+   creditos: `${BASE_URL}/creditos`,
 };
