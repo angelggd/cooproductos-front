@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'; // 1. Importamos Link de react-router-dom
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navLinks = [
     { name: 'Inicio', href: '#hero' },
@@ -17,7 +19,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         
         {/* Logo */}
-        <h1 className="text-2xl font-bold tracking-wider cursor-pointer">
+        <h1 className="text-2xl font-bold tracking-wider cursor-pointer" onClick={()=>navigate('/')}>
           CooProductos
         </h1>
         

@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
 import { VistaHome } from "./views/VistaHome"
 import AuthView from "./views/AuthView"
 import NotFoundView from "./views/NotFoundView"
-import { ToastContainer, toast } from 'react-toastify';
-import "react-toastify/dist/ReactToastify.css";
+import VistaSolicitud from "./views/VistaSolicitud";
 
 function App() {
 
@@ -14,6 +16,7 @@ function App() {
         <Route path="/auth" element={<AuthView/>} />
 
         <Route path="*" element={<NotFoundView />} />
+        <Route path="/VistaSolicitud" element={<VistaSolicitud />} />
       </Routes>
       <ToastContainer
              position="top-right"
