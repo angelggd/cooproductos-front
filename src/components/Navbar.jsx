@@ -5,7 +5,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Inicio', href: '#hero' },
+    { name: 'Inicio', href: '#' },
     { name: 'Nosotros', href: '#nosotros' },
     { name: 'Productos', href: '#productos' },
     { name: 'Simulador', href: '#simulador' },
