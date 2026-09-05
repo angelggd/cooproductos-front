@@ -17,3 +17,40 @@ export const getTasaByPeriodo = async(query) => {
         return { status: 600, message: "Unhandler error", error: error }
     }
 };
+
+//esta funcion devuelve las pagadurias en convenio
+export const getPagadurias = async(query) => {
+    const {act} = query;
+    try {
+        const response = await fetch(`${endpoints.creditos}/pagadurias?act=${act}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+
+//esta funcion devuelve los vendedores
+export const getVendedor = async(query) => {
+    const {act} = query;
+    try {
+        const response = await fetch(`${endpoints.creditos}/vendedores?act=${act}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};

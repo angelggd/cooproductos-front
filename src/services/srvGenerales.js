@@ -84,3 +84,71 @@ export const getRespFiscal = async() => {
         return { status: 600, message: "Unhandler error", error: error }
     }
 };    
+
+//esta funcion devuelve las ocupaciones
+export const getOcupaciones = async() => {
+    try {
+        const response = await fetch(`${endpoints.generales}/ocupacion`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};    
+
+//esta funcion devuelve los estados civiles
+export const getEstcivil = async() => {
+    try {
+        const response = await fetch(`${endpoints.generales}/estcivil`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};    
+
+//esta funcion devuelve los niveles educativos
+export const getNivEducativo = async() => {
+    try {
+        const response = await fetch(`${endpoints.generales}/niveducativo`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};    
+
+//esta funcion devuelve los tipos de vivienda
+export const getVivienda = async() => {
+    try {
+        const response = await fetch(`${endpoints.generales}/vivienda`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};    
