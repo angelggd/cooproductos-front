@@ -8,9 +8,12 @@ import { getPaises, getDptos, getCiudades, getTipodoc,
 import { getPagadurias, getVendedor } from '../services/srvCreditos';
 import { verificaEmail } from '../services/srvMailers';
 import { saveTercero } from '../services/srvTerceros';
+import { saveCliente } from '../services/srvClientes';
+import { saveUser } from '../services/srvUsers';
 
 function VistaSolicitud() {
     let solicitud = JSON.parse(localStorage.getItem("solicitud"));
+    const user = JSON.parse(localStorage.getItem("user"));
     const [paises, setPaises] = useState([]);
     const [dptos, setDptos] = useState([]);
     const [dptosres, setDptosRes] = useState([]);
@@ -292,9 +295,12 @@ function VistaSolicitud() {
           toast.error("Código digitado invalido");
           return;
        };
-       //procedemos a guardar la informacion
-       if(tercero.id==0) {
-          //primero guardamos el tercero
+       let idcliente = cliente.id;
+       let idtercero = cliente.tercero_id;
+       let idusuario = user.id;
+
+       //procedemos a guardar la informacion del tercero
+       if(cliente.tercero.id==0) {
           const tercero = {
              ter_razon: cliente.ter_razon,
              ter_apellido1: cliente.ter_apellido1,
@@ -316,8 +322,73 @@ function VistaSolicitud() {
              toast.error("Ocurrio un error al guardar el tercero");
              return;
           };
-          //ahora grabamos en la tabla de clientes
-       };
+          toast.success("Tercero actualizado");
+          idtercero = resul1.data.registro.id;
+       };  //fin grabacion del tercero
+       
+       //si el usuario no esta logueado creamos un usuario
+       if(idusuario==0) {
+          const nuser = {
+            usu_login: cliente.email,
+            tercero_id: idtercero,
+            roll_id: 1,
+            documento: cliente.ter_documento,
+          };
+          const resul3 = await saveUser(nuser);
+          if(resul3.status!==200) {
+             toast.error("Ocurrio un error al crear el usuario");
+             return;
+          };
+          idusuario = resul3.data.resul.id;
+       }; //fin grabacion del usuario
+
+       //ahora grabamos en la tabla de clientes
+       if(idcliente==0) {
+          const xcliente = {
+             tercero_id: idtercero,
+             cli_fallecido: 0,
+             cli_fechanac: cliente.fechanac,
+             cli_sexo: cliente.sexo,
+             cli_barrio: cliente.barrio,
+             ciudadres_id: cliente.ciures_id,
+             ocupacion_id: cliente.ocupacion_id,
+             estadocivil_id: cliente.estcivil_id,
+             niveducativo_id: cliente.niveducativo_id,
+             vivienda_id: cliente.vivienda_id,
+             cli_personasacargo: cliente.personasacargo,
+             usuario_id: user.id,
+             pagaduria: {
+                det_activa: 1,
+                det_ingreso: cliente.fechaing,
+                det_cargo: cliente.cargo,
+                det_sueldo: cliente.sueldo,
+                ciudad_id: cliente.ciulab_id,
+                pagaduria_id: cliente.empresa_id,
+             }
+          };
+          const resul2 = await saveCliente(xcliente);
+          if(resul2.status!==200) {
+             toast.error("Ocurrio un error al guardar cliente");
+             return;
+          };
+          const nuevocliente = resul2.data.registro;
+          toast.success("Cliente actualizado");
+          idcliente = nuevocliente.id;
+       };  //fin grabacion del cliente
+
+       //por ultimo procedemos a guardar la solicitud de credito
+       const nsolicitud = {
+          sol_fechasolicitud,
+          sol_valorsolicitado: solicitud.monto,
+          sol_tasa: solicitud.tasa,
+          sol_numcuotas: solicitud.meses,
+          sol_valorcuota: solicitud.cuota,
+          sol_inversion,
+          vendedor_id: cliente.vendedor_id,
+          usuario_id: idusuario,
+          modelo_id,
+          cliente_id: idcliente,
+       }
     };
 
     return (

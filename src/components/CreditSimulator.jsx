@@ -175,7 +175,9 @@ export default function CreditSimulator() {
             <p className="text-4xl font-bold text-accent mt-2">
               ${cuota.toLocaleString('es-CO', { maximumFractionDigits: 0 })}
             </p>
-            <button className="w-full rounded-lg bg-amber-300 text-black text-center mt-4 p-2 font-bold cursor-pointer hover:bg-amber-400">¡SOLICITALO YA!</button>
+            <button className="w-full rounded-lg bg-amber-300 text-black text-center mt-4 p-2 font-bold cursor-pointer hover:bg-amber-400"
+               onClick={()=>cargaSolicitud()}
+            >¡SOLICITALO YA!</button>
           </div>
         )}
 

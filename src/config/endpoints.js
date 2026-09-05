@@ -10,4 +10,5 @@ export const endpoints = {
    solicitudes: `${BASE_URL}/solicitudes`,
    mailers: `${BASE_URL}/mailers`,
    creditos: `${BASE_URL}/creditos`,
+   clientes: `${BASE_URL}/clientes`,
 };

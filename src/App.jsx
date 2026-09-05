@@ -8,6 +8,7 @@ import NotFoundView from "./views/NotFoundView"
 import VistaSolicitud from "./views/VistaSolicitud";
 
 function App() {
+  if(!localStorage.getItem("user")) localStorage.setItem("user", JSON.stringify({id:0, username:"", roll_id:0, token:""}));
 
   return (
     <BrowserRouter>
