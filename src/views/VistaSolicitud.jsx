@@ -2,18 +2,22 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import  {Dialog}  from 'primereact/dialog';
 import { getPaises, getDptos, getCiudades, getTipodoc,
          getEstcivil, getNivEducativo, getOcupaciones, getVivienda } from '../services/srvGenerales';
 import { getPagadurias, getVendedor } from '../services/srvCreditos';
-import { verificaEmail } from '../services/srvMailers';
+import { verificaEmail, enviaSolicitud } from '../services/srvMailers';
 import { saveTercero } from '../services/srvTerceros';
 import { saveCliente } from '../services/srvClientes';
 import { saveUser } from '../services/srvUsers';
+import { saveSolicitud, devuelveFechaFormateada } from '../services/srvSolicitudes';
+import { generarSolicitud } from '../services/srvReportes'
 
 function VistaSolicitud() {
     let solicitud = JSON.parse(localStorage.getItem("solicitud"));
     const user = JSON.parse(localStorage.getItem("user"));
+    const navigate = useNavigate();
     const [paises, setPaises] = useState([]);
     const [dptos, setDptos] = useState([]);
     const [dptosres, setDptosRes] = useState([]);
@@ -29,7 +33,8 @@ function VistaSolicitud() {
     const [niveducativo, setNivEducativo] = useState([]);
     const [vendedor, setVendedor] = useState([]);
     const [confirmar, setConfirmar] = useState(false);
-    const [validador, setValidador] = useState(true);
+    const [validador, setValidador] = useState(false);
+    const [grabando, setGrabando] = useState(false);
     const [cliente, setCliente] = useState({
         id: 0,
         tercero_id: 0,
@@ -64,7 +69,7 @@ function VistaSolicitud() {
         empresa_id:0,
         cargo:"",
         fechaing:"",
-        sueldo:"",
+        sueldo:0,
         dirempresa:"",
         telempresa:"",
         vendedor_id:0,
@@ -120,6 +125,12 @@ function VistaSolicitud() {
             await cargarCiudades(id, 3);
             return;
         };
+        if(propiedad=="empresa_id") {
+            const id = Number(valor);
+            const reg = pagadurias.find(ele=>ele.id==id);
+            setCliente({...cliente, empresa_id:id, empresa:reg.gnr_tercero.ter_razon});
+            return;
+        }
         setCliente({...cliente, [propiedad]:valor})
     };
 
@@ -235,6 +246,25 @@ function VistaSolicitud() {
         return cad
     };
 
+    //funcion que genera el token de firma digital
+    const generaToken = () => {
+       const cadena1="0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ0123456789";
+       const dim1 = cadena1.length;
+       let cad = "";
+       let x = 0;
+       for(var i=0;i<24;i++) {
+          const n = Math.random();
+          const v = parseInt(n * dim1);
+          cad += cadena1[v];
+          x +=1;
+          if(x==6){
+             x = 0;
+             cad += i<23 ?"-" :'';
+          }
+       };
+       return cad
+    };
+
     //funcion de validacion de informacion
     const validacion = () => {
         if(cliente.ter_email.length<6) return {error:true, msg:"Email debe tener al menos 6 caracteres"};
@@ -259,6 +289,7 @@ function VistaSolicitud() {
             toast.warning(valida.msg);
             return;
         };
+        setGrabando(true)
         const cadena = generaCadena();
         setCliente({...cliente, cadena})
         setConfirmar(true);
@@ -298,9 +329,8 @@ function VistaSolicitud() {
        let idcliente = cliente.id;
        let idtercero = cliente.tercero_id;
        let idusuario = user.id;
-
        //procedemos a guardar la informacion del tercero
-       if(cliente.tercero.id==0) {
+       if(cliente.tercero_id==0) {
           const tercero = {
              ter_razon: cliente.ter_razon,
              ter_apellido1: cliente.ter_apellido1,
@@ -329,7 +359,7 @@ function VistaSolicitud() {
        //si el usuario no esta logueado creamos un usuario
        if(idusuario==0) {
           const nuser = {
-            usu_login: cliente.email,
+            usu_login: cliente.ter_email,
             tercero_id: idtercero,
             roll_id: 1,
             documento: cliente.ter_documento,
@@ -340,6 +370,7 @@ function VistaSolicitud() {
              return;
           };
           idusuario = resul3.data.resul.id;
+          toast.success("Usuario creado");
        }; //fin grabacion del usuario
 
        //ahora grabamos en la tabla de clientes
@@ -347,6 +378,7 @@ function VistaSolicitud() {
           const xcliente = {
              tercero_id: idtercero,
              cli_fallecido: 0,
+             cli_razonsocial: cliente.ter_razon,
              cli_fechanac: cliente.fechanac,
              cli_sexo: cliente.sexo,
              cli_barrio: cliente.barrio,
@@ -356,7 +388,7 @@ function VistaSolicitud() {
              niveducativo_id: cliente.niveducativo_id,
              vivienda_id: cliente.vivienda_id,
              cli_personasacargo: cliente.personasacargo,
-             usuario_id: user.id,
+             usuario_id: idusuario,
              pagaduria: {
                 det_activa: 1,
                 det_ingreso: cliente.fechaing,
@@ -377,18 +409,75 @@ function VistaSolicitud() {
        };  //fin grabacion del cliente
 
        //por ultimo procedemos a guardar la solicitud de credito
+       const hoy = new Date();
+       const fechaC = devuelveFechaFormateada(hoy);
+       const firmadigital = generaToken();
        const nsolicitud = {
-          sol_fechasolicitud,
+          sol_fechasolicitud: fechaC,
           sol_valorsolicitado: solicitud.monto,
           sol_tasa: solicitud.tasa,
           sol_numcuotas: solicitud.meses,
           sol_valorcuota: solicitud.cuota,
-          sol_inversion,
+          sol_inversion: solicitud.inversion,
           vendedor_id: cliente.vendedor_id,
           usuario_id: idusuario,
-          modelo_id,
+          modelo_id: solicitud.modelo.id,
           cliente_id: idcliente,
-       }
+          sol_empresa: cliente.empresa,
+          sol_cargo: cliente.cargo,
+          sol_fechaingreso: cliente.fechaing,
+          sol_sueldo: cliente.sueldo,
+          sol_dirempresa: cliente.dirempresa,
+          sol_telempresa: cliente.telempresa,
+          pagaduria_id: cliente.empresa_id,
+          sol_token: firmadigital,
+       };
+       const resul4 = await saveSolicitud(nsolicitud);
+       if(resul4.status!==200) {
+          toast.error("Ocurrio un error al guardar la solicitud");
+          return;
+       };
+       toast.success("Solicitud guardada");
+       const xsolicitud = resul4.data;
+       //procedemos a enviar un email al correo de la empresa y al correo del cliente
+       const nom = cliente.ter_razon;
+       const num = resul4.data.id;
+       const numero =num.toString().padStart(7,'0');
+       const fechaActual = new Date(resul4.data.sol_fechasolicitud);
+       const nombreMes = fechaActual.toLocaleString('es-ES', { month: 'long' });
+       const anio = fechaActual.getFullYear();
+       const pdatos = {
+          nombre: nom,
+          cedula: cliente.documento,
+          ciudad: "Barranquilla",
+          valor: solicitud.monto.toLocaleString('es-CO'),
+          cuotas: solicitud.meses,
+          formapago: "mensuales",
+          valorCuota: solicitud.cuota.toLocaleString('es-CO'),
+          mesInicio: nombreMes,
+          anioInicio: anio,
+          empresa: cliente.empresa,
+          token: solicitud.token,
+          fecha: resul4.data.sol_fechasolicitud,
+          numero: numero,
+          token: firmadigital,
+      }; 
+      //generacion del archivo PDF
+      const resul2 = await generarSolicitud(pdatos);
+      if(!resul2.status==200) {
+         toast.error("Ocurrio un error al generar el pdf de la solicitud");
+         navigate('/');
+         return;
+      };
+      //enviamos la solicitud al correo del cliente
+      const resul5 = await enviaSolicitud(pdatos);
+      if(resul5.status!==200) {
+         toast.success("Ocurrio un error al enviar la solicitud al correo");
+         navigate('/');
+         return;
+      };       
+      toast.success("Solicitud enviada al correo del cliente");
+      navigate('/');
     };
 
     return (
@@ -681,7 +770,7 @@ function VistaSolicitud() {
                          name="estcivil_id">
                     <option value="0">Seleccione Estado civil</option>
                     {estcivil.map(est=>
-                        <option key={est.id} value={est.civ}>{est.esc_detalles}</option>
+                        <option key={est.id} value={est.id}>{est.esc_detalles}</option>
                     )}
                  </select>
                  {/* nivel educcativo y ocupacion */}
@@ -727,16 +816,19 @@ function VistaSolicitud() {
              </div>            
           </div>
        </div>
-       <div className="w-full flex mt-4 justify-center">
-           <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[20px] cursor-pointer hover:bg-green-800"
-           onClick={()=>paso1()}
-           >Enviar Solicitud</button>
-       </div>
+       {/*se oculta el boton cuando esta en proceso de grabacion */}
+       {grabando == false &&
+          <div className="w-full flex mt-4 justify-center">
+              <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[20px] cursor-pointer hover:bg-green-800"
+              onClick={()=>paso1()}
+              >Enviar Solicitud</button>
+          </div>
+       }
        {/*Caja de confirmacion*/}
        <Dialog header="" 
             visible={confirmar} 
             className="w-full md:w-[30%] border-2 bg-blue-500 p-2 text-left text-[20px] rounded-lg text-white" 
-            onHide={() => { if (!confirmar) return; setConfirmar(false); }}>
+            onHide={() => { if (!confirmar) return; setConfirmar(false); setGrabando(false)}}>
             <h1 className="w-full text-center">Confirme actualización de datos</h1>  
             <div className="grid grid-cols-2 gap-2 p-6 mt-4">
                 <h2 className="text-[14px] bg-blue-900 rounded-lg text-center">Cadena Generada</h2>
@@ -752,14 +844,14 @@ function VistaSolicitud() {
             <p className="mt-4 text-[12px] w-full text-center">Se enviará un código de seguridad para validar su correo</p>  
             <div className="grid grid-cols-2 gap-4 p-6">
                 <button className="bg-white text-blue-500 rounded-lg p-2" onClick={()=>paso2()}>SI</button>
-                <button className="bg-white text-blue-500 rounded-lg p-2" onClick={()=>setConfirmar(false)}>NO</button>
+                <button className="bg-white text-blue-500 rounded-lg p-2" onClick={()=>{setConfirmar(false); setGrabando(false)}}>NO</button>
             </div>
        </Dialog>
        {/*Caja de validacion final*/}
        <Dialog header="" 
             visible={validador} 
             className="w-full md:w-[30%] border-2 bg-blue-500 p-2 text-left text-[20px] rounded-lg text-white" 
-            onHide={() => { if (!validador) return; setValidador(false); }}>
+            onHide={() => { if (!validador) return; setValidador(false); setGrabando(false)}}>
             <h1 className="w-full text-center bg-blue-900">Verificación Final</h1>
             <p className="mt-4 text-[12px] w-full text-center">Después de validar el código enviado a su correo, el sistema guardará de forma definitiva los datos del cliente y enviará la solicitud de crédito</p>  
             <div className="grid grid-cols-2 gap-1 p-6 mt-4">
@@ -771,8 +863,8 @@ function VistaSolicitud() {
                        placeholder="Digite código enviado"
                        name="cadenadig" />
                 <h1 className="col-span-2">&nbsp;</h1>       
-                <button className="bg-white text-blue-500 rounded-lg p-2" onClick={()=>paso3()}>Enviar Solicitud</button>
-                <button className="bg-white text-blue-500 rounded-lg p-2" onClick={()=>setValidador(false)}>Cancelar</button>
+                <button className="bg-white text-blue-500 rounded-lg p-2 cursor-pointer hover:bg-gray-300" onClick={()=>paso3()}>Enviar Solicitud</button>
+                <button className="bg-white text-blue-500 rounded-lg p-2 cursor-pointer hover:bg-gray-300" onClick={()=>{setValidador(false); setGrabando(false)}}>Cancelar</button>
             </div>
         </Dialog>           
        {/* Footer */}

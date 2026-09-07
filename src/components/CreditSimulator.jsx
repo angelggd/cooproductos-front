@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getTasaByPeriodo } from '../services/srvCreditos';
+import { getTasaByPeriodo, getModelos } from '../services/srvCreditos';
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
 
@@ -9,8 +9,10 @@ export default function CreditSimulator() {
   const [meses, setMeses] = useState(10);
   const [cuota, setCuota] = useState(0);
   const [tasaAnual, setTasaAnual] = useState(0.00);
+  const [inversion, setInversion] = useState(0);
   const [tasa, setTasa] = useState(0.000000);
-  const [modelo, setModelo] = useState(1);  //modelo credito 1 cuota predefinida
+  const [modelos, setModelos] = useState([]);
+  const [modelo, setModelo] = useState({id:0, mod_nombre:"",mod_tipo:2});  
 
   //funcion que carga la tasa efectiva actual
   const getTasa = async() => {
@@ -34,8 +36,19 @@ export default function CreditSimulator() {
      setTasa(nTasa*100);
   };
 
+  //cargue de los modelos de creditos activos
+  const cargarModelos = async() => {
+      const resul = await getModelos({act:1});
+      if(resul.status!==200) {
+         toast.error("Ocurrio un error al cargar los modelos de credito");
+         return;
+      };
+      setModelos(resul.data);
+  };
+
   useEffect(() => {
      getTasa();
+     cargarModelos();
   }, []);
 
 
@@ -43,7 +56,7 @@ export default function CreditSimulator() {
   const calcularCredito = async(e) => {
       e.preventDefault();
       const por_utilidad = 32  //pendiente por cargarlo de un parametro
-      if(modelo==1) {  //modelo cuota predefinida
+      if(modelo.mod_tipo==1) {  //modelo cuota predefinida
          const cuotaM = parseFloat(cuota);
          if (!cuotaM || cuotaM <= 0) return;
          const xtasa=Number(tasa)/100;
@@ -53,6 +66,7 @@ export default function CreditSimulator() {
          const aval = vpresente*por_utilidad/100;
          const tmonto = parseFloat(vpresente-aval);
          setMonto(tmonto);
+         setInversion(vpresente);
       } else {  //monto solicitado
          const xmonto = parseFloat(monto);
          if (!xmonto || xmonto <= 0) return;
@@ -60,11 +74,12 @@ export default function CreditSimulator() {
          const por = por_utilidad/100;
          const aval = por * 1.19 ;    
          const dife_aval = 1 - aval;
-         const inversion = xmonto / dife_aval;
-         const aestudio = inversion - xmonto;
+         const vpresente = xmonto / dife_aval;
+         const aestudio = vpresente - xmonto;
          let VADI = 0 ;  //suma de conceptos no capitalizables (pendiente)
          let vcuota = inversion*(xtasa/(1-(1+xtasa)**(-meses)))+(VADI/meses,0);
          setCuota(parseFloat(vcuota));
+         setInversion(vpresente);
       }
   };
 
@@ -76,14 +91,15 @@ export default function CreditSimulator() {
      if(propiedad=="cuota") setCuota(valor);
      if(propiedad=="meses") setMeses(valor);
      if(propiedad=="modelo") {
-        setModelo(valor);
+        const reg = modelos.find(ele=>ele.id==valor);
+        setModelo(reg);
         setCuota(0);
         setMonto(0);
         return;
      }
      if(propiedad=="monto") setMonto(valor);
-     if(modelo==1) setMonto(0);
-     if(modelo==2) setCuota(0);
+     if(modelo.mod_tipo==1) setMonto(0);
+     if(modelo.mod_tipo==2) setCuota(0);
   };
 
   const cargaSolicitud = () => {
@@ -97,6 +113,7 @@ export default function CreditSimulator() {
         monto,
         meses,
         tasa,
+        inversion,
      });
      localStorage.setItem("solicitud", solicitudJSON);
      navigate('/VistaSolicitud');
@@ -109,16 +126,18 @@ export default function CreditSimulator() {
         
         <form onSubmit={calcularCredito} className="space-y-5">
           <div className="grid grid-cols-3 gap-2 bg-accent text-white mb-2 rounded-lg p-2">
-             <h1 className="w-full text-center">Modelo</h1>
+             <h1 className="col-span-1 w-full text-center">Modelo</h1>
              <select name="modelo" 
-                     value={modelo}
+                     value={modelo.id}
                      onChange={(e)=>cambios(e)}
-                     className="text-center boder-2 bg-accent w-full">
-                <option value="1">Cuota Predefinida</option>
-                <option value="2">Monto Solicitado</option>
+                     className="col-span-2 text-center boder-2 bg-accent w-full">
+                <option value="0">Seleccione Modelo</option>
+                {modelos.map(mod=>
+                   <option key={mod.id} value={mod.id}>{mod.mod_nombre}</option>
+                )}
              </select>
           </div>
-          {modelo==1 ?
+          {modelo.mod_tipo==1 ?
           <div>
             <label className="block text-gray-700 font-semibold mb-2">Cuota Mensual Disponible ($)</label>
             <input 
@@ -165,11 +184,11 @@ export default function CreditSimulator() {
           <button 
             type="submit" 
             className="w-full bg-accent hover:bg-secondary text-white font-bold py-3 rounded-lg transition-colors duration-300 shadow-md">
-            {modelo==1 ? "Calcular Capital" : "Calcular Cuota"}
+            {modelo.mod_tipo==1 ? "Calcular Capital" : "Calcular Cuota"}
           </button>
         </form>
 
-        {modelo==2 && cuota>0 && (
+        {modelo.mod_tipo==2 && cuota>0 && (
           <div className="mt-8 p-6 bg-primary text-white rounded-xl text-center shadow-inner transition-opacity duration-500">
             <p className="text-lg opacity-90">Valor Cuota Calculada:</p>
             <p className="text-4xl font-bold text-accent mt-2">
@@ -181,7 +200,7 @@ export default function CreditSimulator() {
           </div>
         )}
 
-        {modelo==1 && monto>0 && (
+        {modelo.mod_tipo==1 && monto>0 && (
           <div className="mt-8 p-6 bg-primary text-white rounded-xl text-center shadow-inner transition-opacity duration-500">
             <p className="text-lg opacity-90">Monto autorizado:</p>
             <p className="text-4xl font-bold text-accent mt-2">
