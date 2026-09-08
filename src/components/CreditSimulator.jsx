@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getTasaByPeriodo, getModelos } from '../services/srvCreditos';
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
+import { getParametroByCod } from '../services/srvGenerales';
 
 export default function CreditSimulator() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function CreditSimulator() {
   const [inversion, setInversion] = useState(0);
   const [tasa, setTasa] = useState(0.000000);
   const [modelos, setModelos] = useState([]);
+  const [utilidad, setUtilidad] = useState(0.00);
   const [modelo, setModelo] = useState({id:0, mod_nombre:"",mod_tipo:2});  
 
   //funcion que carga la tasa efectiva actual
@@ -46,29 +48,42 @@ export default function CreditSimulator() {
       setModelos(resul.data);
   };
 
+  //cargue de la utilidad
+  const cargarUtilidad = async() => {
+     const resul = await getParametroByCod({codigo:"001"});
+     if(resul.status!==200) {
+        toast.error("Ocurrio un error al cargar el parametro 001");
+        return;
+     };
+     const uti = Number(resul.data.par_valor);
+     console.log("utilidad",resul.data)
+     setUtilidad(uti);
+  };
+
   useEffect(() => {
      getTasa();
      cargarModelos();
+     cargarUtilidad();
   }, []);
 
 
   //funcion que ejecuta los calculos del simulador
   const calcularCredito = async(e) => {
       e.preventDefault();
-      const por_utilidad = 32  //pendiente por cargarlo de un parametro
+      const por_utilidad = Number(utilidad)  
       if(modelo.mod_tipo==1) {  //modelo cuota predefinida
-         const cuotaM = parseFloat(cuota);
+         const cuotaM = parseInt(cuota);
          if (!cuotaM || cuotaM <= 0) return;
          const xtasa=Number(tasa)/100;
          let vp1=cuotaM*((1+Number(xtasa))**meses-1);
          let vp2=(Number(xtasa)*(1+Number(xtasa))**meses);
          const vpresente=vp1/vp2;
          const aval = vpresente*por_utilidad/100;
-         const tmonto = parseFloat(vpresente-aval);
+         const tmonto = parseInt(vpresente-aval);
          setMonto(tmonto);
          setInversion(vpresente);
       } else {  //monto solicitado
-         const xmonto = parseFloat(monto);
+         const xmonto = parseInt(monto);
          if (!xmonto || xmonto <= 0) return;
          const xtasa=Number(tasa)/100;
          const por = por_utilidad/100;
@@ -78,7 +93,7 @@ export default function CreditSimulator() {
          const aestudio = vpresente - xmonto;
          let VADI = 0 ;  //suma de conceptos no capitalizables (pendiente)
          let vcuota = inversion*(xtasa/(1-(1+xtasa)**(-meses)))+(VADI/meses,0);
-         setCuota(parseFloat(vcuota));
+         setCuota(parseInt(vcuota));
          setInversion(vpresente);
       }
   };

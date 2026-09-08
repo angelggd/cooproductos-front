@@ -361,7 +361,7 @@ function VistaSolicitud() {
           const nuser = {
             usu_login: cliente.ter_email,
             tercero_id: idtercero,
-            roll_id: 1,
+            roll_id: 5,
             documento: cliente.ter_documento,
           };
           const resul3 = await saveUser(nuser);
@@ -440,15 +440,14 @@ function VistaSolicitud() {
        toast.success("Solicitud guardada");
        const xsolicitud = resul4.data;
        //procedemos a enviar un email al correo de la empresa y al correo del cliente
-       const nom = cliente.ter_razon;
        const num = resul4.data.id;
        const numero =num.toString().padStart(7,'0');
        const fechaActual = new Date(resul4.data.sol_fechasolicitud);
        const nombreMes = fechaActual.toLocaleString('es-ES', { month: 'long' });
        const anio = fechaActual.getFullYear();
        const pdatos = {
-          nombre: nom,
-          cedula: cliente.documento,
+          nombre: cliente.ter_razon,
+          cedula: cliente.ter_documento,
           ciudad: "Barranquilla",
           valor: solicitud.monto.toLocaleString('es-CO'),
           cuotas: solicitud.meses,
@@ -470,7 +469,17 @@ function VistaSolicitud() {
          return;
       };
       //enviamos la solicitud al correo del cliente
-      const resul5 = await enviaSolicitud(pdatos);
+      const sdatos = {
+         ter_razon: cliente.ter_razon,
+         email: cliente.ter_email,
+         ter_documento: cliente.ter_documento,
+         capital: solicitud.monto,
+         cuotas: solicitud.meses,
+         valorCuota: solicitud.cuota,
+         tasa: solicitud.tasa,
+         token: firmadigital,
+      };
+      const resul5 = await enviaSolicitud(sdatos);
       if(resul5.status!==200) {
          toast.success("Ocurrio un error al enviar la solicitud al correo");
          navigate('/');

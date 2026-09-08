@@ -38,13 +38,12 @@ export const verificaSolicitud = async(cliente, token) => {
 };
 
 //esta funcion envia el correo al cliente con los datos de la solicitud
-export const enviaSolicitud = async(datos, token) => {
+export const enviaSolicitud = async(datos) => {
     try {
         const response = await fetch(`${endpoints.mailers}/solicitud`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "token": token,
             },
             body: JSON.stringify(datos),
         });
