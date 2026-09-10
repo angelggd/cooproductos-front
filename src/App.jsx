@@ -5,7 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { VistaHome } from "./views/VistaHome"
 import AuthView from "./views/AuthView"
 import NotFoundView from "./views/NotFoundView"
-import VistaSolicitud from "./views/VistaSolicitud";
+import VistaSolicitud from "./views/VistaSolicitud"
+import DashboardView from "./views/DashboardView" 
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route index element={<VistaHome/>} />
         <Route path="/auth" element={<AuthView/>} />
+        <Route path="/dashboard" element={<DashboardView />} />
 
         <Route path="*" element={<NotFoundView />} />
         <Route path="/VistaSolicitud" element={<VistaSolicitud />} />

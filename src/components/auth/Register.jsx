@@ -1,9 +1,18 @@
 // src/components/Register.jsx
 import { useState } from 'react';
+import { saveUser } from '../../services/srvUsers';
 
 export default function Register({ onSwitchToLogin }) {
   const [formData, setFormData] = useState({
-    fullName: '',
+    primerNombre: '',
+    segundoNombre: '',
+    primerApellido: '',
+    segundoApellido: '',
+    telefono: '',
+    celular: '',
+    direccion: '',
+    documento: '',
+    ciudad: '',    
     email: '',
     password: '',
     confirmPassword: '',
@@ -35,7 +44,7 @@ export default function Register({ onSwitchToLogin }) {
     formData.confirmPassword.length > 0 && 
     formData.password !== formData.confirmPassword;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -53,33 +62,55 @@ export default function Register({ onSwitchToLogin }) {
       return;
     }
 
-    // Simulación de envío/registro
     setIsSubmitting(true);
     setErrorMsg('');
+    setSuccessMsg('');
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    // 2. Filtrar y sanitizar los campos que necesita el backend
+    const payload = {
+      primerNombre: formData.primerNombre.trim(),
+      segundoNombre: formData.segundoNombre.trim(),
+      primerApellido: formData.primerApellido.trim(),
+      segundoApellido: formData.segundoApellido.trim(),
+      documento: formData.documento.trim(),
+      telefono: formData.telefono.trim(),
+      celular: formData.celular.trim(),
+      direccion: formData.direccion.trim(),
+      ciudad: formData.ciudad.trim(),
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password,
+    };
+
+    // 3. Ejecutar la petición con saveUser
+    console.log(payload)
+    const result = await saveUser(payload);
+
+    if (result.status >= 200 && result.status < 300) {
       setSuccessMsg('¡Registro exitoso! Bienvenido a la familia CooProductos.');
-      console.log('Datos de Registro:', formData);
-    }, 1500);
+
+      setTimeout(() => {
+        if (onSwitchToLogin) onSwitchToLogin();
+      }, 2000);
+    } else {
+      setErrorMsg(result.message || 'Ocurrió un error al registrar tu cuenta.');
+    }
+    
+    setIsSubmitting(false);
   };
 
   return (
     <div className="flex w-full min-h-[600px]">
       
-      {/* 1. Lado Izquierdo: Imagen / Banner Corporativo (Visible solo en desktop 'md:flex') */}
-      <div className="hidden md:flex md:w-1/2 relative bg-primary flex-col justify-between p-10 text-white overflow-hidden">
-        {/* Imagen de fondo con filtro suave */}
+      {/* 1. Lado Izquierdo: Imagen / Banner Corporativo (Desktop) */}
+      <div className="hidden md:flex md:w-5/12 relative bg-primary flex-col justify-between p-10 text-white overflow-hidden">
         <img 
           src="https://images.unsplash.com/photo-1556742049-0a67d51187eb?auto=format&fit=crop&w=1000&q=80" 
           alt="Asociados CooProductos" 
           className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30"
         />
         
-        {/* Gradiente Verde Corporativo */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/85 to-secondary/90 -z-0"></div>
 
-        {/* Contenido Banner */}
         <div className="relative z-10">
           <span className="text-accent font-bold tracking-widest text-xs uppercase bg-white/10 py-1.5 px-3 rounded-full backdrop-blur-sm border border-white/10">
             Únete a CooProductos
@@ -101,15 +132,14 @@ export default function Register({ onSwitchToLogin }) {
       </div>
 
       {/* 2. Lado Derecho: Formulario de Registro */}
-      <div className="w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-center">
+      <div className="w-full md:w-1/2 p-8 sm:p-10 flex flex-col justify-start py-8">
         
-        {/* Encabezado del Formulario */}
         <div className="mb-6 text-center md:text-left">
           <h3 className="text-2xl sm:text-3xl font-bold text-primary tracking-tight">Crear una Cuenta</h3>
-          <p className="text-gray-500 text-sm mt-1">Diligencia tus datos para solicitar tu vinculación</p>
+          <p className="text-gray-500 text-sm mt-1">Diligencia tus datos personales para tu vinculación</p>
         </div>
 
-        {/* Alertas de error / éxito */}
+        {/* Alertas */}
         {errorMsg && (
           <div className="mb-4 p-3.5 bg-red-50 border-l-4 border-red-500 text-red-700 text-xs sm:text-sm rounded-r-lg flex items-center gap-2">
             <svg className="w-5 h-5 flex-shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,34 +160,170 @@ export default function Register({ onSwitchToLogin }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           
-          {/* Campo Nombre Completo */}
-          <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="fullName">
-              Nombre Completo
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </span>
+          {/* Fila 1: Primer Nombre & Segundo Nombre */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="primerNombre">
+                Primer Nombre <span className="text-red-500">*</span>
+              </label>
               <input
-                id="fullName"
-                name="fullName"
+                id="primerNombre"
+                name="primerNombre"
                 type="text"
-                value={formData.fullName}
+                value={formData.primerNombre}
                 onChange={handleChange}
                 required
-                placeholder="Ej. María Perez"
-                className="w-full pl-11 pr-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200"
+                disabled={isSubmitting}
+                placeholder="Ej. Ángel"
+                className="w-full px-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="segundoNombre">
+                Segundo Nombre
+              </label>
+              <input
+                id="segundoNombre"
+                name="segundoNombre"
+                type="text"
+                value={formData.segundoNombre}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                placeholder="Ej. Gabriel"
+                className="w-full px-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
               />
             </div>
           </div>
 
-          {/* Campo Email */}
+          {/* Fila 2: Primer Apellido & Segundo Apellido */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="primerApellido">
+                Primer Apellido <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="primerApellido"
+                name="primerApellido"
+                type="text"
+                value={formData.primerApellido}
+                onChange={handleChange}
+                required
+                disabled={isSubmitting}
+                placeholder="Ej. Pérez"
+                className="w-full px-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="segundoApellido">
+                Segundo Apellido
+              </label>
+              <input
+                id="segundoApellido"
+                name="segundoApellido"
+                type="text"
+                value={formData.segundoApellido}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                placeholder="Ej. Gómez"
+                className="w-full px-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
+              />
+            </div>
+          </div>
+
+          {/* Fila 3: Documento (Línea completa) */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="documento">
+              Número de Documento <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="documento"
+              name="documento"
+              type="text"
+              value={formData.documento}
+              onChange={handleChange}
+              required
+              disabled={isSubmitting}
+              placeholder="Ej. 1045678901"
+              className="w-full px-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
+            />
+          </div>
+
+          {/* Fila 4: Teléfono & Celular */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="telefono">
+                Teléfono Fijo
+              </label>
+              <input
+                id="telefono"
+                name="telefono"
+                type="tel"
+                value={formData.telefono}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                placeholder="Ej. 6053000000"
+                className="w-full px-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="celular">
+                Celular <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="celular"
+                name="celular"
+                type="tel"
+                value={formData.celular}
+                onChange={handleChange}
+                required
+                disabled={isSubmitting}
+                placeholder="Ej. 3001234567"
+                className="w-full px-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
+              />
+            </div>
+          </div>
+
+          {/* Fila 5: Dirección */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="direccion">
+              Dirección de Residencia <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="direccion"
+              name="direccion"
+              type="text"
+              value={formData.direccion}
+              onChange={handleChange}
+              required
+              disabled={isSubmitting}
+              placeholder="Ej. Calle 53 # 46-12"
+              className="w-full px-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
+            />
+          </div>
+
+          {/* Fila 6: Ciudad */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="ciudad">
+              Ciudad <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="ciudad"
+              name="ciudad"
+              type="text"
+              value={formData.ciudad}
+              onChange={handleChange}
+              required
+              disabled={isSubmitting}
+              placeholder="Ej. Barranquilla"
+              className="w-full px-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
+            />
+          </div>
+
+          {/* Fila 7: Correo Electrónico */}
           <div>
             <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="reg-email">
-              Correo Electrónico
+              Correo Electrónico <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
@@ -172,16 +338,17 @@ export default function Register({ onSwitchToLogin }) {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                disabled={isSubmitting}
                 placeholder="ejemplo@correo.com"
-                className="w-full pl-11 pr-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200"
+                className="w-full pl-11 pr-4 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
               />
             </div>
           </div>
 
-          {/* Campo Contraseña */}
+          {/* Fila 8: Contraseña */}
           <div>
             <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="reg-password">
-              Contraseña
+              Contraseña <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
@@ -196,8 +363,9 @@ export default function Register({ onSwitchToLogin }) {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                disabled={isSubmitting}
                 placeholder="Mínimo 6 caracteres"
-                className="w-full pl-11 pr-11 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200"
+                className="w-full pl-11 pr-11 py-2.5 bg-background border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all duration-200 disabled:opacity-60"
               />
               <button
                 type="button"
@@ -218,10 +386,10 @@ export default function Register({ onSwitchToLogin }) {
             </div>
           </div>
 
-          {/* Campo Repetir Contraseña con validación visual */}
+          {/* Fila 9: Repetir Contraseña */}
           <div>
             <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5" htmlFor="confirmPassword">
-              Repetir Contraseña
+              Repetir Contraseña <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
@@ -236,8 +404,9 @@ export default function Register({ onSwitchToLogin }) {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                disabled={isSubmitting}
                 placeholder="Repite tu contraseña"
-                className={`w-full pl-11 pr-11 py-2.5 bg-background border rounded-xl text-sm outline-none transition-all duration-200 ${
+                className={`w-full pl-11 pr-11 py-2.5 bg-background border rounded-xl text-sm outline-none transition-all duration-200 disabled:opacity-60 ${
                   passwordsMatch
                     ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20'
                     : passwordsMismatch
@@ -263,7 +432,6 @@ export default function Register({ onSwitchToLogin }) {
               </button>
             </div>
 
-            {/* Mensajes de validación visual de la coincidencia */}
             {passwordsMatch && (
               <p className="text-[11px] font-semibold text-emerald-600 mt-1 flex items-center gap-1">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,7 +451,7 @@ export default function Register({ onSwitchToLogin }) {
             )}
           </div>
 
-          {/* Checkbox Términos y Condiciones */}
+          {/* Fila 10: Términos y Condiciones */}
           <div className="flex items-start gap-2 pt-1">
             <input
               id="acceptTerms"
@@ -291,7 +459,8 @@ export default function Register({ onSwitchToLogin }) {
               type="checkbox"
               checked={formData.acceptTerms}
               onChange={handleChange}
-              className="mt-1 h-4 w-4 rounded border-gray-300 text-accent focus:ring-accent cursor-pointer accent-accent"
+              disabled={isSubmitting}
+              className="mt-1 h-4 w-4 rounded border-gray-300 text-accent focus:ring-accent cursor-pointer accent-accent disabled:opacity-60"
             />
             <label htmlFor="acceptTerms" className="text-xs text-gray-600 leading-tight">
               Acepto los{' '}
@@ -302,7 +471,7 @@ export default function Register({ onSwitchToLogin }) {
             </label>
           </div>
 
-          {/* Botón Submit */}
+          {/* Botón de Envío */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -314,7 +483,7 @@ export default function Register({ onSwitchToLogin }) {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>Procesando...</span>
+                <span>Procesando registro...</span>
               </>
             ) : (
               <>
@@ -327,11 +496,12 @@ export default function Register({ onSwitchToLogin }) {
           </button>
         </form>
 
-        {/* Pie: Enlace para volver al Login */}
+        {/* Pie: Volver a Login */}
         <div className="mt-6 pt-4 border-t border-gray-100 text-center">
           <p className="text-sm text-gray-500">
             ¿Ya tienes una cuenta?{' '}
             <button
+              type="button"
               onClick={onSwitchToLogin}
               className="font-bold text-secondary hover:text-accent transition-colors underline-offset-4 hover:underline"
             >

@@ -1,14 +1,32 @@
 // src/components/Login.jsx
 import { useState } from 'react';
+import { loginUser } from '../../services/srvUsers'
+import { toast } from "react-toastify";
+import { useNavigate } from 'react-router-dom';
 
 export default function Login({ onSwitchToRegister }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Login con:', { email, password });
+    const result = await loginUser({usu_login:email, passw:password})
+    console.log("result", result)
+    if(result.data.errorCode>0) {
+      toast.warning(result.data.msg)
+      return;
+    };
+
+    navigate('/dashboard')
+
+    
+
+
   };
 
   return (
