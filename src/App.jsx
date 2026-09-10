@@ -9,6 +9,7 @@ import VistaSolicitud from "./views/VistaSolicitud"
 import DashboardView from "./views/DashboardView" 
 
 function App() {
+  if(!localStorage.getItem("user")) localStorage.setItem("user", JSON.stringify({id:0, username:"", roll_id:0, token:""}));
 
   return (
     <BrowserRouter>
