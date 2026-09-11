@@ -7,16 +7,23 @@ import AuthView from "./views/AuthView"
 import NotFoundView from "./views/NotFoundView"
 import VistaSolicitud from "./views/VistaSolicitud"
 import DashboardView from "./views/DashboardView" 
+import { UserLoginProvider } from "./context/UserLoginProvider";
+import { RutaProtegida } from "./components/RutaProtegida";
+
 
 function App() {
+  
   if(!localStorage.getItem("user")) localStorage.setItem("user", JSON.stringify({id:0, username:"", roll_id:0, token:""}));
 
   return (
+    <UserLoginProvider>
     <BrowserRouter>
       <Routes>
-        <Route index element={<VistaHome/>} />
+        <Route index element={<VistaHome/>} />      
+        <Route path="/dashboard" element={<RutaProtegida><DashboardView /></RutaProtegida>} />
+  
         <Route path="/auth" element={<AuthView/>} />
-        <Route path="/dashboard" element={<DashboardView />} />
+
 
         <Route path="*" element={<NotFoundView />} />
         <Route path="/VistaSolicitud" element={<VistaSolicitud />} />
@@ -32,8 +39,10 @@ function App() {
              draggable
              pauseOnHover
              theme="colored"
-      />                           
+             />                           
     </BrowserRouter>    
+    </UserLoginProvider>
+    
   )
 }
 

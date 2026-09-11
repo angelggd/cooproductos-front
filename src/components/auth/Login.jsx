@@ -3,12 +3,14 @@ import { useState } from 'react';
 import { loginUser } from '../../services/srvUsers'
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
+import { useUserLogin } from '../../context/useUserLogin';
 
 export default function Login({ onSwitchToRegister }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login } = useUserLogin()
 
 
 
@@ -16,17 +18,21 @@ export default function Login({ onSwitchToRegister }) {
     e.preventDefault();
     console.log('Login con:', { email, password });
     const result = await loginUser({usu_login:email, passw:password})
-    console.log("result", result)
+    console.log(result.data.user)
     if(result.data.errorCode>0) {
       toast.warning(result.data.msg)
       return;
     };
 
+    login({
+      id:result.data.user.id, 
+      username:result.data.user.usu_login,
+      rol:result.data.user.roll_id,
+      token:result.data.token
+    });
+
+    localStorage.setItem("user", JSON.stringify({id:result.data.user.id, username:result.data.user.usu_login, roll_id:result.data.user.roll_id, token:result.data.token}));
     navigate('/dashboard')
-
-    
-
-
   };
 
   return (
