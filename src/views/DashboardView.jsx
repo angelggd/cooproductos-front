@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUserLogin } from '../context/useUserLogin';
 import { useNavigate } from 'react-router-dom';
+import { getTerceroById } from '../services/srvTerceros';
 
 export default function DashboardView() {
   const { user: userLogin, logout } = useUserLogin()
@@ -13,11 +14,43 @@ export default function DashboardView() {
   // 2. Estado para mostrar u ocultar el menú en teléfonos
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
+  const [tercero, setTercero] = useState(null)
+  console.log(userLogin.tercero_id)
+  useEffect(()=>{
+
+    const datosTercero = async () => {
+
+      // 1. Validar que exista el id antes de consultar
+      if (!userLogin?.tercero_id) {
+        console.log('tercero id dasboar', userLogin.tercero_id);
+        return;
+      }
+
+      try {
+        const data = await getTerceroById(userLogin.tercero_id)
+       setTercero(data)
+      } catch (error) {
+        console.log('ocurrio un error', error);
+      } 
+
+    }
+
+    datosTercero(userLogin.tercero_id)
+    /*  */
+  },[userLogin?.tercero_id])
+
+
+ console.log('datos tercero dasboard', tercero)
+// 3. Proteger si el usuario no tiene tercero asignado
+  if (!tercero) {
+    return <p>No se encontraron datos para este usuario o no tiene un tercero asociado.</p>;
+  }
+
   // Datos simulados del usuario
   const user = {
-    name: 'Angel Gil',
-    role: 'Administrador',
-    email: 'carlos@cooproductos.com',
+    name: tercero.data.ter_nombre1.charAt(0).toUpperCase()+tercero.data.ter_nombre1.slice(1).toLowerCase().concat(' ', tercero.data.ter_apellido1.charAt(0).toUpperCase()+tercero.data.ter_apellido1.slice(1).toLowerCase()),
+    role: userLogin.rol.charAt(0).toUpperCase()+userLogin.rol.slice(1).toLowerCase(),
+    email: tercero.data.ter_email,
   };
 
   // Lista simple de opciones del menú (fácil de leer y ampliar)
@@ -140,7 +173,7 @@ export default function DashboardView() {
           <div className="flex items-center gap-4">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-bold text-gray-800 leading-none">{user.name}</p>
-              <span className="text-xs text-secondary font-medium">{user.role}</span>
+              <span className="text-xs text-secondary font-medium">Rol: {user.role}</span>
             </div>
 
             <button
@@ -169,6 +202,7 @@ export default function DashboardView() {
                 </div>
 
                 {/* Tarjetas sencillas de datos */}
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="bg-white p-4 rounded border border-gray-200">
                     <span className="text-xs text-gray-500 font-bold uppercase">Solicitudes Activas</span>

@@ -38,7 +38,7 @@ export const getTerceros = async(query) => {
 //esta funcion devuelve tercero por su id
 export const getTerceroById = async(id) => {
     try {
-        const response = await fetch(`${endpoints.users}/${id}`, {
+        const response = await fetch(`${endpoints.terceros}/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

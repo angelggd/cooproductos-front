@@ -1,6 +1,6 @@
 // src/components/Login.jsx
 import { useState } from 'react';
-import { loginUser } from '../../services/srvUsers'
+import { loginUser, rolUser } from '../../services/srvUsers'
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
 import { useUserLogin } from '../../context/useUserLogin';
@@ -16,23 +16,35 @@ export default function Login({ onSwitchToRegister }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login con:', { email, password });
-    const result = await loginUser({usu_login:email, passw:password})
-    console.log(result.data.user)
-    if(result.data.errorCode>0) {
-      toast.warning(result.data.msg)
-      return;
-    };
 
-    login({
-      id:result.data.user.id, 
-      username:result.data.user.usu_login,
-      rol:result.data.user.roll_id,
-      token:result.data.token
-    });
+    try {
 
-    localStorage.setItem("user", JSON.stringify({id:result.data.user.id, username:result.data.user.usu_login, roll_id:result.data.user.roll_id, token:result.data.token}));
-    navigate('/dashboard')
+      console.log('Login con:', { email, password });
+      const result = await loginUser({usu_login:email, passw:password})
+      console.log(result.data.user)
+      
+      if(result.data.errorCode>0) {
+        toast.warning(result.data.msg)
+        return;
+      };
+      const rol = await rolUser(result.data.user.roll_id)
+      console.log('rolUser', rol)
+      
+      login({
+        id:result.data.user.id, 
+        username:result.data.user.usu_login,
+        rol_id:result.data.user.roll_id,
+        rol:rol.data.roll_nombre,
+        tercero_id:result.data.user.tercero_id,
+        token:result.data.token
+      });
+      
+      localStorage.setItem("user", JSON.stringify({id:result.data.user.id, username:result.data.user.usu_login, roll_id:result.data.user.roll_id, token:result.data.token}));
+      navigate('/dashboard')
+    }catch(error) {
+      
+      console.log('ocurrio un error inesperado', error);
+    }
   };
 
   return (
