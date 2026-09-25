@@ -10,7 +10,7 @@ import { getPagadurias, getVendedor } from '../services/srvCreditos';
 import { verificaEmail, enviaSolicitud } from '../services/srvMailers';
 import { saveTercero } from '../services/srvTerceros';
 import { saveCliente } from '../services/srvClientes';
-import { saveUser } from '../services/srvUsers';
+import { saveUser, getUserById } from '../services/srvUsers';
 import { saveSolicitud, devuelveFechaFormateada } from '../services/srvSolicitudes';
 import { generarSolicitud } from '../services/srvReportes'
 
@@ -218,6 +218,57 @@ function VistaSolicitud() {
         setVendedor(resul.data)
     };
 
+    //carga del cliente si esta logueado
+    const cargarCliente = async() => {
+       if(user.id==0) return;   //usuario no logueado
+       if(user.roll_id<5) return;  //esta opcion es solo para usuarios nivel 5 (clientes)
+       const resul1 = await getUserById(id);
+       if(resul1.status!==200) return; //ocurrio error al consultar el usuario
+       const tercero = resul1.data;
+       const clien = {
+        id: 0,
+        tercero_id: tercero.tercero_id,
+        ter_razon: tercero.gnr_tercero.ter_razon,
+        tipodoc_id: tercero.gnr_tercero.tipodoc_id,
+        ter_apellido1: tercero.gnr_tercero.ter_apellido1,
+        ter_apellido2: tercero.gnr_tercero.ter_apellido2,
+        ter_nombre1: tercero.gnr_tercero.ter_nombre1,
+        ter_nombre2: tercero.gnr_tercero.ter_nombre2,
+        ter_documento: tercero.gnr_tercero.ter_documento,
+        pais_id: 0,
+        dpto_id: 0,
+        ciudad_id: tercero.gnr_tercero.ciudad_id,
+        sexo: 0,
+        ter_email: tercero.gnr_tercero.ter_email,
+        ter_direccion : tercero.gnr_tercero.ter_direccion,
+        ter_telefono: tercero.gnr_tercero.ter_telefono,
+        ter_celular: tercero.gnr_tercero.ter_movil,
+        respfiscal_id: tercero.gnr_tercero.respfiscal_id,
+        fechanac: "",
+        dptores_id:0,
+        ciures_id:0,
+        dptolab_id:0,
+        ciulab_id:0,
+        ocupacion_id:0,
+        niveducativo_id:0,
+        vivienda_id: 0,
+        sexo:0,
+        personasacargo:0,
+        estcivil_id:0,
+        empresa:"",
+        empresa_id:0,
+        cargo:"",
+        fechaing:"",
+        sueldo:0,
+        dirempresa:"",
+        telempresa:"",
+        vendedor_id:0,
+        cadena:"",
+        cadenadig:"",        
+       };
+       setCliente(clien);
+    };
+
     useEffect(() => {
        cargarPaises();
        cargarDptos(1, 2)
@@ -229,6 +280,7 @@ function VistaSolicitud() {
        cargarNivelEdu();
        cargarViviendas();
        cargarVendedores();
+       cargarCliente();
     }, []);
 
     //funcion que genera el token de firma digital
