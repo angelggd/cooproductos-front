@@ -7,7 +7,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const navLinks = [
-    { name: 'Inicio', href: '#hero' },
+    { name: 'Inicio', href: '#' },
     { name: 'Nosotros', href: '#nosotros' },
     { name: 'Productos', href: '#productos' },
     { name: 'Simulador', href: '#simulador' },
