@@ -1,6 +1,6 @@
 // src/components/Login.jsx
 import { useState } from 'react';
-import { loginUser, rolUser } from '../../services/srvUsers'
+import { loginUser } from '../../services/srvUsers'
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
 import { useUserLogin } from '../../context/useUserLogin';
@@ -15,36 +15,30 @@ export default function Login({ onSwitchToRegister }) {
 
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-
-      console.log('Login con:', { email, password });
-      const result = await loginUser({usu_login:email, passw:password})
-      console.log(result.data.user)
+     e.preventDefault();
+     const result = await loginUser({usu_login:email, passw:password});
+     if(result.status!==200) {
+         toast.error("Ocurrio un error inesperado");
+         return;
+     };  
+     if(result.data.errorCode>0) {
+         toast.warning(result.data.msg)
+         return;
+     };
+     const datos = result.data.registro;
+    
+     login({
+         id: datos.id, 
+         username: datos.usu_login,
+         roll_id: datos.roll_id,
+         rol: datos.gnr_roll.roll_nombre,
+         tercero_id: datos.tercero_id,
+         token: result.data.token
+     });
       
-      if(result.data.errorCode>0) {
-        toast.warning(result.data.msg)
-        return;
-      };
-      const rol = await rolUser(result.data.user.roll_id)
-      console.log('rolUser', rol)
-      
-      login({
-        id:result.data.user.id, 
-        username:result.data.user.usu_login,
-        rol_id:result.data.user.roll_id,
-        rol:rol.data.roll_nombre,
-        tercero_id:result.data.user.tercero_id,
-        token:result.data.token
-      });
-      
-      localStorage.setItem("user", JSON.stringify({id:result.data.user.id, username:result.data.user.usu_login, roll_id:result.data.user.roll_id, token:result.data.token}));
-      navigate('/dashboard')
-    }catch(error) {
-      
-      console.log('ocurrio un error inesperado', error);
-    }
+     localStorage.setItem("user", JSON.stringify(login));
+     navigate('/dashboard')
+  
   };
 
   return (
@@ -170,6 +164,17 @@ export default function Login({ onSwitchToRegister }) {
             className="w-full mt-2 py-3.5 px-4 bg-accent hover:bg-secondary text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer"
           >
             <span>Iniciar Sesión</span>
+            <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+
+          {/* Botón de retorno a Home con microinteracción */}
+          <button
+            onClick={()=>navigate('/')}
+            className="w-full mt-2 py-3.5 px-4 bg-accent hover:bg-secondary text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer"
+          >
+            <span>Cancelar</span>
             <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
