@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { useUserLogin } from '../context/useUserLogin';
 import { useNavigate } from 'react-router-dom';
 import { getTerceroById } from '../services/srvTerceros';
+import GestionUsers from '../components/GestionUsers';
+import CreditSimulator from '../components/CreditSimulator';
+import Solicitudes from '../components/Solicitudes';
+import Estadisticas from '../components/Estadisticas';
 
 export default function DashboardView() {
   const { user: userLogin, logout } = useUserLogin()
@@ -202,34 +206,13 @@ export default function DashboardView() {
                 </div>
 
                 {/* Tarjetas sencillas de datos */}
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-white p-4 rounded border border-gray-200">
-                    <span className="text-xs text-gray-500 font-bold uppercase">Solicitudes Activas</span>
-                    <p className="text-2xl font-bold text-primary mt-1">5</p>
-                  </div>
-                  <div className="bg-white p-4 rounded border border-gray-200">
-                    <span className="text-xs text-gray-500 font-bold uppercase">Aprobaciones</span>
-                    <p className="text-2xl font-bold text-primary mt-1">12</p>
-                  </div>
-                  <div className="bg-white p-4 rounded border border-gray-200">
-                    <span className="text-xs text-gray-500 font-bold uppercase">Asociados Nuevos</span>
-                    <p className="text-2xl font-bold text-primary mt-1">28</p>
-                  </div>
-                </div>
+                <Estadisticas/>
               </div>
             )}
 
             {/* VISTA 2: Solicitudes */}
             {activeView === 'solicitudes' && (
-              <div className="bg-white p-6 rounded border border-gray-200">
-                <h3 className="text-lg font-bold text-primary mb-2">Mis Solicitudes</h3>
-                <p className="text-sm text-gray-600 mb-4">Listado general de radicaciones y créditos.</p>
-                
-                <div className="p-8 border border-dashed border-gray-300 rounded text-center text-sm text-gray-500">
-                  Aquí va la tabla básica de solicitudes.
-                </div>
-              </div>
+               <Solicitudes/>
             )}
 
             {/* VISTA 3: Simulador */}
@@ -238,22 +221,13 @@ export default function DashboardView() {
                 <h3 className="text-lg font-bold text-primary mb-2">Simulador de Crédito</h3>
                 <p className="text-sm text-gray-600 mb-4">Cálculo de cuotas de crédito para asociados.</p>
 
-                <div className="p-8 border border-dashed border-gray-300 rounded text-center text-sm text-gray-500">
-                  Aquí puedes colocar el formulario de tu simulador.
-                </div>
+                <CreditSimulator/> 
               </div>
             )}
 
             {/* VISTA 4: Usuarios */}
             {activeView === 'usuarios' && (
-              <div className="bg-white p-6 rounded border border-gray-200">
-                <h3 className="text-lg font-bold text-primary mb-2">Gestión de Usuarios</h3>
-                <p className="text-sm text-gray-600 mb-4">Registro y administración de cuentas.</p>
-
-                <div className="p-8 border border-dashed border-gray-300 rounded text-center text-sm text-gray-500">
-                  Aquí va el formulario de registro de asociados.
-                </div>
-              </div>
+              <GestionUsers/>
             )}
 
           </div>
