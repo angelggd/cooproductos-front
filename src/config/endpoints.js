@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:4000"
+const BASE_URL = import.meta.env.VITE_API_URL
 
 export const endpoints = {
    users: `${BASE_URL}/users`,
@@ -8,8 +8,7 @@ export const endpoints = {
    pagadurias: `${BASE_URL}/pagadurias`,
    creditos: `${BASE_URL}/creditos`,
    solicitudes: `${BASE_URL}/solicitudes`,
-   mailers: `${BASE_URL}/mailers`,
-   creditos: `${BASE_URL}/creditos`,
+   mailers: `${BASE_URL}/mailers`,      
    clientes: `${BASE_URL}/clientes`,
    reportes: `${BASE_URL}/reportes`,
 };
