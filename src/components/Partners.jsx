@@ -55,7 +55,7 @@ export default function Partners() {
         <span className="text-accent text-xs font-bold tracking-widest uppercase bg-accent/10 px-3.5 py-1.5 rounded-full inline-block mb-3">
           Entidades Vinculadas
         </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-primary mb-3">
+        <h2 className="text-3xl sm:text-4xl font-bold text-primary mb-3">
           Convenios Institucionales Activos
         </h2>
         <div className="w-20 h-1 bg-accent mx-auto rounded-full mb-4"></div>

@@ -60,7 +60,7 @@ export default function HowItWorks() {
       <div className="container mx-auto px-4">
         
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-primary mb-4">Así de fácil es obtener tu crédito</h2>
+          <h2 className="text-3xl font-bold text-primary tracking-tight mb-4">Así de fácil es obtener tu crédito</h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full"></div>
         </div>
 

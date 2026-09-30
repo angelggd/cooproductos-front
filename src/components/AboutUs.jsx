@@ -60,7 +60,7 @@ export default function AboutUs() {
         
         {/* Encabezado sin animación para mantener ancla visual */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-primary mb-4">Sobre Nosotros</h2>
+          <h2 className="text-3xl font-bold text-primary tracking-tight mb-4">Sobre Nosotros</h2>
           <div className="w-24 h-1 bg-accent mx-auto rounded-full"></div>
         </div>
 
