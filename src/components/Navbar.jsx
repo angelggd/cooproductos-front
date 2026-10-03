@@ -1,8 +1,11 @@
 import { useState } from 'react';
+//import { useUserLogin } from '../context/useUserLogin';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'; // 1. Importamos Link de react-router-dom
 
 export default function Navbar() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  //const { user: userLogin, logout } = useUserLogin()
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -36,12 +39,18 @@ export default function Navbar() {
           ))}
           
           {/* 2. Botón de Iniciar Sesión (Desktop) */}
-          <Link 
-            to="/auth" 
-            className="bg-accent hover:bg-white hover:text-primary transition-all duration-300 py-2 px-6 rounded-full font-bold shadow-md transform hover:-translate-y-0.5 ml-2"
-          >
-            Iniciar Sesión
-          </Link>
+          {user.id==0 
+             ? <Link 
+                  to="/auth" 
+                  className="bg-accent hover:bg-white hover:text-primary transition-all duration-300 py-2 px-6 rounded-full font-bold shadow-md transform hover:-translate-y-0.5 ml-2"
+               >
+               Iniciar Sesión
+               </Link>
+             : <div className="text-center hidden sm:block border-2 rounded-lg p-2">
+                 <p className="text-[10px] font-bold text-gray-400 leading-none mb-1">{user.username}</p>
+                 <button className="bg-green-950 text-center rounded-lg px-2 hover:bg-green-800">Cerrar Sesión</button>
+               </div>
+          }
         </nav>
 
         {/* Botón de Hamburguesa para Móviles */}

@@ -9,7 +9,7 @@ import { getPaises, getDptos, getCiudades, getTipodoc,
 import { getPagadurias, getVendedor } from '../services/srvCreditos';
 import { verificaEmail, enviaSolicitud } from '../services/srvMailers';
 import { saveTercero } from '../services/srvTerceros';
-import { saveCliente } from '../services/srvClientes';
+import { saveCliente, getClienteByTerceroId } from '../services/srvClientes';
 import { saveUser, getUserById } from '../services/srvUsers';
 import { saveSolicitud, devuelveFechaFormateada } from '../services/srvSolicitudes';
 import { generarSolicitud } from '../services/srvReportes'
@@ -222,47 +222,61 @@ function VistaSolicitud() {
     const cargarCliente = async() => {
        if(user.id==0) return;   //usuario no logueado
        if(user.roll_id<5) return;  //esta opcion es solo para usuarios nivel 5 (clientes)
-       const resul1 = await getUserById(id);
+       const resul1 = await getUserById(user.id);
        if(resul1.status!==200) return; //ocurrio error al consultar el usuario
-       const tercero = resul1.data;
+       const idtercero = resul1.data.tercero_id;
+       const resul2 = await getClienteByTerceroId(idtercero);
+       if(resul2.status!==200) return; //ocurrio error al consultar el cliente
+       const xcliente = resul2.data;
+       const detacli = xcliente.cre_detaclientes[0]; //primer registro de la pagaduria
+
+       //cargamos los departamentos del pais de origen
+       await cargarDptos(xcliente.gnr_tercero.gnr_ciudad.gnr_departamento.pais_id, 1);
+       //cargamos las ciudades del dpto de origen
+       await cargarCiudades(xcliente.gnr_tercero.gnr_ciudad.departamento_id, 1);
+       //cargamos las ciudades del dpto de residencia
+       await cargarCiudades(xcliente.gnr_ciudad.departamento_id, 2);
+       //cargamos las ciudades del dpto laboral
+       await cargarCiudades(detacli.gnr_ciudad.departamento_id, 3);
+
        const clien = {
-        id: 0,
-        tercero_id: tercero.tercero_id,
-        ter_razon: tercero.gnr_tercero.ter_razon,
-        tipodoc_id: tercero.gnr_tercero.tipodoc_id,
-        ter_apellido1: tercero.gnr_tercero.ter_apellido1,
-        ter_apellido2: tercero.gnr_tercero.ter_apellido2,
-        ter_nombre1: tercero.gnr_tercero.ter_nombre1,
-        ter_nombre2: tercero.gnr_tercero.ter_nombre2,
-        ter_documento: tercero.gnr_tercero.ter_documento,
-        pais_id: 0,
-        dpto_id: 0,
-        ciudad_id: tercero.gnr_tercero.ciudad_id,
-        sexo: 0,
-        ter_email: tercero.gnr_tercero.ter_email,
-        ter_direccion : tercero.gnr_tercero.ter_direccion,
-        ter_telefono: tercero.gnr_tercero.ter_telefono,
-        ter_celular: tercero.gnr_tercero.ter_movil,
-        respfiscal_id: tercero.gnr_tercero.respfiscal_id,
-        fechanac: "",
-        dptores_id:0,
-        ciures_id:0,
-        dptolab_id:0,
-        ciulab_id:0,
-        ocupacion_id:0,
-        niveducativo_id:0,
-        vivienda_id: 0,
-        sexo:0,
-        personasacargo:0,
-        estcivil_id:0,
-        empresa:"",
-        empresa_id:0,
-        cargo:"",
-        fechaing:"",
-        sueldo:0,
-        dirempresa:"",
-        telempresa:"",
-        vendedor_id:0,
+        id: xcliente.id,
+        tercero_id: idtercero,
+        ter_razon: xcliente.gnr_tercero.ter_razon,
+        tipodoc_id: xcliente.gnr_tercero.tipodoc_id,
+        ter_apellido1: xcliente.gnr_tercero.ter_apellido1,
+        ter_apellido2: xcliente.gnr_tercero.ter_apellido2,
+        ter_nombre1: xcliente.gnr_tercero.ter_nombre1,
+        ter_nombre2: xcliente.gnr_tercero.ter_nombre2,
+        ter_documento: xcliente.gnr_tercero.ter_documento,
+        pais_id: xcliente.gnr_tercero.gnr_ciudad.gnr_departamento.pais_id,
+        dpto_id: xcliente.gnr_tercero.gnr_ciudad.departamento_id,
+        ciudad_id: xcliente.gnr_tercero.ciudad_id,
+        sexo: xcliente.cli_sexo,
+        ter_email: xcliente.gnr_tercero.ter_email,
+        ter_direccion : xcliente.gnr_tercero.ter_direccion,
+        ter_telefono: xcliente.gnr_tercero.ter_telefono,
+        ter_celular: xcliente.gnr_tercero.ter_movil,
+        respfiscal_id: xcliente.gnr_tercero.respfiscal_id,
+        fechanac: xcliente.cli_fechanac,
+        dptores_id:xcliente.gnr_ciudad.departamento_id,
+        ciures_id:xcliente.ciudadres_id,
+        dptolab_id: detacli.gnr_ciudad.departamento_id,
+        ciulab_id: detacli.ciudad_id,
+        ocupacion_id: xcliente.ocupacion_id,
+        niveducativo_id: xcliente.niveducativo_id,
+        vivienda_id: xcliente.vivienda_id,
+        sexo: xcliente.cli_sexo,
+        personasacargo: xcliente.cli_personasacargo,
+        estcivil_id: xcliente.estadocivil_id,
+        empresa: detacli.cre_pagadurium.gnr_tercero.ter_razon,
+        empresa_id: detacli.pagaduria_id,
+        cargo: detacli.det_cargo,
+        fechaing: detacli.det_ingreso,
+        sueldo: detacli.det_sueldo,
+        dirempresa: detacli.cre_pagadurium.gnr_tercero.ter_direccion,
+        telempresa: detacli.cre_pagadurium.gnr_tercero.ter_telefono,
+        vendedor_id: 0,
         cadena:"",
         cadenadig:"",        
        };

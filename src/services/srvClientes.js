@@ -52,6 +52,23 @@ export const getClienteById = async(id) => {
     }
 };
 
+//esta funcion devuelve cliente por el id de tercero
+export const getClienteByTerceroId = async(id) => {
+    try {
+        const response = await fetch(`${endpoints.clientes}/tercero_id/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
 //esta funcion que guarda un cliente nuevo
 export const saveCliente = async(datos) => {
     try {

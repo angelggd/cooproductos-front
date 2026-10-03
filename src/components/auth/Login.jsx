@@ -27,16 +27,17 @@ export default function Login({ onSwitchToRegister }) {
      };
      const datos = result.data.registro;
     
-     login({
+     const xlogin = {
          id: datos.id, 
          username: datos.usu_login,
          roll_id: datos.roll_id,
          rol: datos.gnr_roll.roll_nombre,
          tercero_id: datos.tercero_id,
          token: result.data.token
-     });
-      
-     localStorage.setItem("user", JSON.stringify(login));
+     };
+     
+     localStorage.setItem("user", JSON.stringify(xlogin));
+     login(xlogin); 
      navigate('/dashboard')
   
   };
