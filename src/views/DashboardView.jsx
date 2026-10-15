@@ -11,7 +11,7 @@ export default function DashboardView() {
   const { user: userLogin, logout } = useUserLogin()
   const navigate = useNavigate();
 
-  console.log('desde dasboard', userLogin)
+ 
   // 1. Estado para saber qué pantalla mostrar en el centro
   const [activeView, setActiveView] = useState('resumen');
 
@@ -19,7 +19,7 @@ export default function DashboardView() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const [tercero, setTercero] = useState(null)
-  console.log(userLogin.tercero_id)
+
   useEffect(()=>{
 
     const datosTercero = async () => {
@@ -44,7 +44,7 @@ export default function DashboardView() {
   },[userLogin?.tercero_id])
 
 
- console.log('datos tercero dasboard', tercero)
+ //console.log('datos tercero dasboard', tercero)
 // 3. Proteger si el usuario no tiene tercero asignado
   if (!tercero) {
     return <p>No se encontraron datos para este usuario o no tiene un tercero asociado.</p>;

@@ -17,6 +17,19 @@ export default function Navbar() {
     { name: 'Convenios', href: '#convenios' },
   ];
 
+  const cierraSesion = () => {
+      const xlogin = {
+         id: 0, 
+         username: "",
+         roll_id: 0,
+         rol: "",
+         tercero_id: 0,
+         token: ""
+     };
+     localStorage.setItem("user", JSON.stringify(xlogin));
+     navigate("/");
+  };
+
   return (
     <header className="bg-primary text-white sticky top-0 z-50 shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -48,7 +61,7 @@ export default function Navbar() {
                </Link>
              : <div className="text-center hidden sm:block border-2 rounded-lg p-2">
                  <p className="text-[10px] font-bold text-gray-400 leading-none mb-1">{user.username}</p>
-                 <button className="bg-green-950 text-center rounded-lg px-2 hover:bg-green-800">Cerrar Sesión</button>
+                 <button className="bg-green-950 text-center rounded-lg px-2 hover:bg-green-800" onClick={()=>cierraSesion()}>Cerrar Sesión</button>
                </div>
           }
         </nav>

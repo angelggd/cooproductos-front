@@ -9,13 +9,14 @@ export const devuelveFechaFormateada = (hoy) => {
 };
 
 //esta funcion devuelve el numero de registros de la tabla de solicitudes
-export const countSolicitudes = async(query) => {
-    const {estado, vendedor, usuario} = query;    
+export const countSolicitudes = async(query, token) => {
+    const {estado, vendedor, usuario_id, cliente, lim, npag} = query;    
     try {
-        const response = await fetch(`${endpoints.solicitudes}/count?estado=${estado}&vendedor=${vendedor}&usuario=${usuario}`, {
+        const response = await fetch(`${endpoints.solicitudes}/count?cliente=${cliente}&lim=${lim}&npag=${npag}&estado=${estado}&vendedor=${vendedor}&usuario_id=${usuario_id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -27,13 +28,14 @@ export const countSolicitudes = async(query) => {
 };
 
 //esta funcion devuelve las solicitudes
-export const getSolicitudes = async(query) => {
-    const {estado, vendedor, usuario} = query;    
+export const getSolicitudes = async(query, token) => {
+    const {estado, vendedor, usuario_id, cliente, lim, npag} = query;   
     try {
-        const response = await fetch(`${endpoints.solicitudes}?estado=${estado}&vendedor=${vendedor}&usuario=${usuario}`, {
+        const response = await fetch(`${endpoints.solicitudes}?cliente=${cliente}&lim=${lim}&npag=${npag}&estado=${estado}&vendedor=${vendedor}&usuario_id=${usuario_id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -45,12 +47,13 @@ export const getSolicitudes = async(query) => {
 };
 
 //esta funcion devuelve la solicitud por su id
-export const getSolicitudById = async(id) => {
+export const getSolicitudById = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.solicitudes}/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
