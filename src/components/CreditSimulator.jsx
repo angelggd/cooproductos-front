@@ -14,7 +14,7 @@ export default function CreditSimulator() {
   const [tasa, setTasa] = useState(0.000000);
   const [modelos, setModelos] = useState([]);
   const [utilidad, setUtilidad] = useState(0.00);
-  const [modelo, setModelo] = useState({id:0, mod_nombre:"",mod_tipo:2});  
+  const [modelo, setModelo] = useState({id:0, mod_nombre:"",mod_tipo:0, mod_tasa:0.00, mod_tipointeres:2});  
 
   //funcion que carga la tasa efectiva actual
   const getTasa = async() => {
@@ -56,46 +56,48 @@ export default function CreditSimulator() {
         return;
      };
      const uti = Number(resul.data.par_valor);
-     console.log("utilidad",resul.data)
      setUtilidad(uti);
   };
 
   useEffect(() => {
      getTasa();
      cargarModelos();
-     cargarUtilidad();
   }, []);
 
 
   //funcion que ejecuta los calculos del simulador
   const calcularCredito = async(e) => {
       e.preventDefault();
-      const por_utilidad = Number(utilidad)  
-      if(modelo.mod_tipo==1) {  //modelo cuota predefinida
-         const cuotaM = parseInt(cuota);
-         if (!cuotaM || cuotaM <= 0) return;
-         const xtasa=Number(tasa)/100;
-         let vp1=cuotaM*((1+Number(xtasa))**meses-1);
-         let vp2=(Number(xtasa)*(1+Number(xtasa))**meses);
-         const vpresente=vp1/vp2;
-         const aval = vpresente*por_utilidad/100;
-         const tmonto = parseInt(vpresente-aval);
-         setMonto(tmonto);
-         setInversion(vpresente);
-      } else {  //monto solicitado
-         const xmonto = parseInt(monto);
-         if (!xmonto || xmonto <= 0) return;
-         const xtasa=Number(tasa)/100;
-         const por = por_utilidad/100;
-         const aval = por * 1.19 ;    
-         const dife_aval = 1 - aval;
-         const vpresente = xmonto / dife_aval;
-         const aestudio = vpresente - xmonto;
-         let VADI = 0 ;  //suma de conceptos no capitalizables (pendiente)
-         let vcuota = inversion*(xtasa/(1-(1+xtasa)**(-meses)))+(VADI/meses,0);
-         setCuota(parseInt(vcuota));
-         setInversion(vpresente);
-      }
+      if(modelo.id==0) {
+         toast.info("Debe seleccionar modelo de credito");
+         return;
+      };
+      if (!monto || monto <= 0) {
+         toast.info("Digite monto a solicitar");
+         return;
+      };
+      const tasaReal = Number(modelo.mod_tasa);
+      const tasaFiscal = Number(tasa);  
+      const xmonto = parseInt(monto);
+      const vint = xmonto * tasaReal / 100;  //calculamos el interes mensual a la tasa real
+      const tint = parseInt(vint * meses);   //calculamos el total interes
+      let tcredito = xmonto + tint;  //calculamos el total del credito   
+      let vcuota = parseInt(tcredito/meses);  //calculo inicial de la cuota a la tasa real
+      let vpresente = tcredito / (1 + ((tasaFiscal / 100) * meses));  //hallamos el valor presente a interes simple
+      vpresente = parseInt(vpresente);
+      const aestudio = vpresente - xmonto;
+      const xtasa = tasaFiscal/100;
+      if(modelo.mod_tipointeres==1) {  //calculamos la cuota a interes compuesto
+          vcuota = vpresente * (xtasa / (1 - (1 + xtasa)**(-meses)));
+      } else {  //calculo de la cuota a interes simple
+          const vint = vpresente * xtasa;
+          const tint = parseInt(vint * meses);
+          tcredito = vpresente + tint;
+          vcuota = parseInt(tcredito / meses);
+      };    
+      tcredito = vcuota * meses;
+      setCuota(parseInt(vcuota));
+      setInversion(vpresente);
   };
 
   //funcion q se dispara cuando se hacen cambios
@@ -103,7 +105,6 @@ export default function CreditSimulator() {
      e.preventDefault();
      const propiedad = e.target.name;
      const valor = Number(e.target.value);
-     if(propiedad=="cuota") setCuota(valor);
      if(propiedad=="meses") setMeses(valor);
      if(propiedad=="modelo") {
         const reg = modelos.find(ele=>ele.id==valor);
@@ -113,8 +114,6 @@ export default function CreditSimulator() {
         return;
      }
      if(propiedad=="monto") setMonto(valor);
-     if(modelo.mod_tipo==1) setMonto(0);
-     if(modelo.mod_tipo==2) setCuota(0);
   };
 
   const cargaSolicitud = () => {
@@ -152,20 +151,6 @@ export default function CreditSimulator() {
                 )}
              </select>
           </div>
-          {modelo.mod_tipo==1 ?
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Cuota Mensual Disponible ($)</label>
-            <input 
-              type="number" 
-              value={cuota}
-              name="cuota"
-              min={0}
-              onChange={(e) => cambios(e)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary outline-none transition-all"
-              placeholder="Ej. 500000"
-              required
-            />
-          </div>  :
           <div>
             <label className="block text-gray-700 font-semibold mb-2">Monto Solicitado ($)</label>
             <input 
@@ -179,7 +164,6 @@ export default function CreditSimulator() {
               required
             />
           </div>  
-          }
           <div>
             <label className="block text-gray-700 font-semibold mb-2">Plazo (Meses)</label>
             <input 
@@ -199,11 +183,11 @@ export default function CreditSimulator() {
           <button 
             type="submit" 
             className="w-full bg-accent hover:bg-secondary text-white font-bold py-3 rounded-lg transition-colors duration-300 shadow-md">
-            {modelo.mod_tipo==1 ? "Calcular Capital" : "Calcular Cuota"}
+            Calcular Cuota
           </button>
         </form>
 
-        {modelo.mod_tipo==2 && cuota>0 && (
+        {cuota>0 && (
           <div className="mt-8 p-6 bg-primary text-white rounded-xl text-center shadow-inner transition-opacity duration-500">
             <p className="text-lg opacity-90">Valor Cuota Calculada:</p>
             <p className="text-4xl font-bold text-accent mt-2">
@@ -215,18 +199,6 @@ export default function CreditSimulator() {
           </div>
         )}
 
-        {modelo.mod_tipo==1 && monto>0 && (
-          <div className="mt-8 p-6 bg-primary text-white rounded-xl text-center shadow-inner transition-opacity duration-500">
-            <p className="text-lg opacity-90">Monto autorizado:</p>
-            <p className="text-4xl font-bold text-accent mt-2">
-              ${monto.toLocaleString('es-CO', { maximumFractionDigits: 0 })}
-            </p>
-            <button className="w-full rounded-lg bg-amber-300 text-black text-center mt-4 p-2 font-bold cursor-pointer hover:bg-amber-400"
-              onClick={()=>cargaSolicitud()}
-            >
-              ¡SOLICITALO YA!</button>
-          </div>
-        )}
         <p className="mb-3 text-[12px] text-center">Los valores mostrados son aproximados y no constituyen una oferta vinculante. La tasa, cuota y condiciones finales pueden variar según el análisis crediticio y las tasas vigentes al momento de la aprobación.</p>
       </div>
     </section>
