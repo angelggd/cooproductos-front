@@ -14,7 +14,7 @@ export default function CreditSimulator() {
   const [tasa, setTasa] = useState(0.000000);
   const [modelos, setModelos] = useState([]);
   const [utilidad, setUtilidad] = useState(0.00);
-  const [modelo, setModelo] = useState({id:0, mod_nombre:"",mod_tipo:0, mod_tasa:0.00, mod_tipointeres:2});  
+  const [modelo, setModelo] = useState({id:0, mod_nombre:"",mod_tipo:0, mod_tasa:0.00, mod_tipointeres:1});  
 
   //funcion que carga la tasa efectiva actual
   const getTasa = async() => {
@@ -61,6 +61,7 @@ export default function CreditSimulator() {
 
   useEffect(() => {
      getTasa();
+     cargarUtilidad();
      cargarModelos();
   }, []);
 
@@ -79,25 +80,44 @@ export default function CreditSimulator() {
       const tasaReal = Number(modelo.mod_tasa);
       const tasaFiscal = Number(tasa);  
       const xmonto = parseInt(monto);
-      const vint = xmonto * tasaReal / 100;  //calculamos el interes mensual a la tasa real
-      const tint = parseInt(vint * meses);   //calculamos el total interes
-      let tcredito = xmonto + tint;  //calculamos el total del credito   
-      let vcuota = parseInt(tcredito/meses);  //calculo inicial de la cuota a la tasa real
-      let vpresente = tcredito / (1 + ((tasaFiscal / 100) * meses));  //hallamos el valor presente a interes simple
-      vpresente = parseInt(vpresente);
-      const aestudio = vpresente - xmonto;
-      const xtasa = tasaFiscal/100;
-      if(modelo.mod_tipointeres==1) {  //calculamos la cuota a interes compuesto
-          vcuota = vpresente * (xtasa / (1 - (1 + xtasa)**(-meses)));
-      } else {  //calculo de la cuota a interes simple
-          const vint = vpresente * xtasa;
-          const tint = parseInt(vint * meses);
-          tcredito = vpresente + tint;
-          vcuota = parseInt(tcredito / meses);
-      };    
-      tcredito = vcuota * meses;
-      setCuota(parseInt(vcuota));
-      setInversion(vpresente);
+      
+      if(modelo.mod_tipo==1) {  // aumento inversion 
+         const vint = xmonto * tasaReal / 100;  //calculamos el interes mensual a la tasa real
+         const tint = parseInt(vint * meses);   //calculamos el total interes
+         let tcredito = xmonto + tint;  //calculamos el total del credito   
+         let vcuota = parseInt(tcredito/meses);  //calculo inicial de la cuota a la tasa real
+         let vpresente = tcredito / (1 + ((tasaFiscal / 100) * meses));  //hallamos el valor presente a interes simple
+         vpresente = parseInt(vpresente);
+         const aestudio = vpresente - xmonto;
+         const xtasa = tasaFiscal/100;
+         if(modelo.mod_tipointeres==1) {  //calculamos la cuota a interes compuesto
+             vcuota = vpresente * (xtasa / (1 - (1 + xtasa)**(-meses)));
+         } else {  //calculo de la cuota a interes simple
+             const vint = vpresente * xtasa;
+             const tint = parseInt(vint * meses);
+             tcredito = vpresente + tint;
+             vcuota = parseInt(tcredito / meses);
+         };    
+         tcredito = vcuota * meses;
+         setCuota(parseInt(vcuota));
+         setInversion(vpresente);
+         return;
+      };
+      
+      if(modelo.mod_tipo==8) {  //modelo joalsa
+         const por_uti = Number(utilidad)/100;
+         const aval = por_uti * 1.19;
+         const dif_aval = 1 - aval;
+         let ninversion = parseInt(monto / dif_aval);
+         const aestudio = ninversion - monto;
+         const tasaC = tasaFiscal/100;
+         const vcuota1= tasaC * ( 1 + tasaC ) ** meses;
+         const vcuota2= ( 1 + tasaC ) ** meses-1
+         const vcuota = ninversion * ( vcuota1 / vcuota2 );
+         setCuota(parseInt(vcuota));
+         setInversion(ninversion);
+         return;
+      };
   };
 
   //funcion q se dispara cuando se hacen cambios
