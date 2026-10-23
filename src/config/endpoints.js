@@ -11,4 +11,5 @@ export const endpoints = {
    mailers: `${BASE_URL}/mailers`,      
    clientes: `${BASE_URL}/clientes`,
    reportes: `${BASE_URL}/reportes`,
+   asesores: `${BASE_URL}/vendedores/asesor`,
 };

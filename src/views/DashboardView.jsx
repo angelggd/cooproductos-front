@@ -6,6 +6,9 @@ import GestionUsers from '../components/GestionUsers';
 import CreditSimulator from '../components/CreditSimulator';
 import Solicitudes from '../components/Solicitudes';
 import Estadisticas from '../components/Estadisticas';
+import GestionAsesores from '../components/GestionAsesores';
+import GestionVendedores from '../components/GestionVendedores';
+
 
 export default function DashboardView() {
   const { user: userLogin, logout } = useUserLogin()
@@ -63,6 +66,8 @@ export default function DashboardView() {
     { id: 'solicitudes', label: 'Mis Solicitudes' },
     { id: 'simulador', label: 'Simulador de Crédito' },
     { id: 'usuarios', label: 'Gestión de Usuarios' },
+    { id: 'asesores', label: 'Gestión de Asesoress' },
+    { id: 'vendedores', label: 'Gestión de Vendedores' },
   ];
 
   // Función auxiliar para cambiar de vista y cerrar el menú en móvil
@@ -228,6 +233,16 @@ export default function DashboardView() {
             {/* VISTA 4: Usuarios */}
             {activeView === 'usuarios' && (
               <GestionUsers/>
+            )}
+
+           {/* VISTA 5: Asesores */}
+            {activeView === 'asesores' && (
+              <GestionAsesores/>
+            )}
+
+           {/* VISTA 6: Vendedores */}
+            {activeView === 'vendedores' && (
+              <GestionVendedores/>
             )}
 
           </div>
