@@ -8,6 +8,7 @@ import Solicitudes from '../components/Solicitudes';
 import Estadisticas from '../components/Estadisticas';
 import GestionAsesores from '../components/GestionAsesores';
 import GestionVendedores from '../components/GestionVendedores';
+import GestionClientes from '../components/GestionClientes';
 
 
 export default function DashboardView() {
@@ -66,8 +67,9 @@ export default function DashboardView() {
     { id: 'solicitudes', label: 'Mis Solicitudes' },
     { id: 'simulador', label: 'Simulador de Crédito' },
     { id: 'usuarios', label: 'Gestión de Usuarios' },
-    { id: 'asesores', label: 'Gestión de Asesoress' },
+    { id: 'asesores', label: 'Gestión de Asesores' },
     { id: 'vendedores', label: 'Gestión de Vendedores' },
+    { id: 'clientes', label: 'Gestión de Clientes'},
   ];
 
   // Función auxiliar para cambiar de vista y cerrar el menú en móvil
@@ -243,6 +245,11 @@ export default function DashboardView() {
            {/* VISTA 6: Vendedores */}
             {activeView === 'vendedores' && (
               <GestionVendedores/>
+            )}
+
+           {/* VISTA 7: Clientes */}
+            {activeView === 'clientes' && (
+              <GestionClientes/>
             )}
 
           </div>

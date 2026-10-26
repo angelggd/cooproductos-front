@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
-import { cargarVendedores, saveVendedor, getVendedorById, toggleVendedor, countVendedores } from '../services/srvVendedores';
+import { cargarVendedores, saveVendedor, getVendedorById,
+         toggleVendedor, countVendedores, updateVendedor } from '../services/srvVendedores';
+import { getAsesores } from '../services/srvAsesores';
 import { toast } from "react-toastify";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin2Fill } from "react-icons/ri";
 import { MdOutlineCreateNewFolder } from "react-icons/md";
+import { MdFirstPage, MdOutlineLastPage, MdOutlineNavigateNext } from "react-icons/md";
+import { GrFormPrevious } from "react-icons/gr";
 import  {Dialog}  from 'primereact/dialog';
 import { getDptos, getCiudades, getTipodoc } from '../services/srvGenerales';
 import { saveTercero, updateTercero } from '../services/srvTerceros';
@@ -12,8 +16,9 @@ import { saveTercero, updateTercero } from '../services/srvTerceros';
 function GestionVendedores() {
     const user = JSON.parse(localStorage.getItem("user"));
     const [vendedores, setVendedores] = useState([]);
+    const [asesores, SetAsesores] = useState([]);
     const [ventana, setVentana] = useState(false);
-    const [selectedVendedor, setSelectedVendedor] = useState({id:0, activo:1, tercero_id:0, dpto_id:0, ciudad_id:0, tipodoc:0 });
+    const [selectedVendedor, setSelectedVendedor] = useState({id:0, activo:1, tercero_id:0, dpto_id:0, ciudad_id:0, tipodoc:0, asesor_id:0 });
     const [dptos, setDptos] = useState([]);
     const [ciudades, setCiudades] = useState([]);
     const [tipodocu, setTipodocu] = useState([]);
@@ -42,6 +47,16 @@ function GestionVendedores() {
          setTipodocu(resul.data);
     };
  
+    //carga de asesores
+    const cargaAsesores = async() => {
+       const resul = await getAsesores({act:0});
+       if(resul.status!==200) {
+           toast.error("Ocurrio un error al consultar asesores");
+           return;
+       };
+       const datos = resul.data;
+       SetAsesores(datos);
+    };
  
     const blanquear = () => {
        setSelectedVendedor({
@@ -61,6 +76,7 @@ function GestionVendedores() {
        email:"",
        tercero_id: 0,
        activo:1,
+       asesor_id:0,
        })
     };
  
@@ -73,7 +89,6 @@ function GestionVendedores() {
         }; 
         const datos = result1.data;
         const treg = Number(datos.nregistros);
-        toast.info(treg)
         const calc = Math.round(treg / 20);
         const xp = calc * 20 < treg ? calc + 1 : calc; 
         setPaginacion({totregistros: treg, totpaginas: xp});
@@ -88,6 +103,7 @@ function GestionVendedores() {
     useEffect(() => {
        cargarDptos(1);
        cargarTipodoc();
+       cargaAsesores();
        let query = {lim: 20, npag: 1, act:0, out:0};
        cargavendedores(query);
     }, []);
@@ -116,6 +132,7 @@ function GestionVendedores() {
           email:registro.gnr_tercero.ter_email,
           tercero_id: registro.tercero_id,
           activo:registro.out_activo,
+          asesor_id: registro.outsorcing_id,
        });
        cargarCiudades(dpt);
        abrirVentana();   
@@ -161,8 +178,9 @@ function GestionVendedores() {
           toast.error("Ocurrio un error al actualizar estado del Vendedor");
           return;
        };
-       toast.success("Estado actualizado")
-       cargavendedores();
+       toast.success("Estado actualizado");
+       let query = {lim: 20, npag: pagina, act:0, out:0};
+       cargavendedores(query);
     };
  
     //abre ventana de dialogo para creacion o modificacion de un Vendedor
@@ -178,6 +196,7 @@ function GestionVendedores() {
     //validacion de informacion
     const validacion = () => {
        if(selectedVendedor.tipodoc==0) return {error:true, msg:"Debe seleccionar tipo de documento"};
+       if(selectedVendedor.asesor_id==0) return {error:true, msg:"Debe seleccionar el asesor-outsorcing"};
        if(selectedVendedor.ciudad_id==0) return {error:true, msg:"Debe seleccionar ciudad"};
        if(selectedVendedor.documento.length<5) return {error:true, msg:"Numero de documento debe tener al menos 5 caracteres"};
        if(selectedVendedor.apellido1.length<3) return {error:true, msg:"Primer Apellido debe tener al menos 3 caracteres"};
@@ -201,6 +220,7 @@ function GestionVendedores() {
           ter_nombre1:selectedVendedor.nombre1,
           ter_nombre2:selectedVendedor.nombre2,
           ter_documento:selectedVendedor.documento,
+          ter_direccion:selectedVendedor.direccion,
           tipodoc_id:selectedVendedor.tipodoc,
           ciudad_id:selectedVendedor.ciudad_id,
           ter_telefono:selectedVendedor.telefono,
@@ -230,7 +250,8 @@ function GestionVendedores() {
        const datosVendedor = {
           id: selectedVendedor.id,
           tercero_id: idtercero,
-          out_activo: selectedVendedor.activo,
+          ven_activo: selectedVendedor.activo,
+          outsorcing_id: selectedVendedor.asesor_id,
        };
        if(selectedVendedor.id==0) {
           const resul3 = await saveVendedor(datosVendedor);
@@ -238,11 +259,48 @@ function GestionVendedores() {
              toast.error("Ocurrio un error al actualizar Vendedor");
              return;
           };
+       } else {
+          const resul4 = await updateVendedor(datosVendedor, selectedVendedor.id);
+          if(!resul4.status==200) {
+             toast.error("Ocurrio un error al actualizar Vendedor");
+             return;
+          };
        };   
        setVentana(false);
-       toast.success("Registro actualizado")
-       cargavendedores();
+       toast.success("Registro actualizado");
+       let query = {lim: 20, npag: pagina, act:0, out:0};
+       cargavendedores(query);
     };
+
+    const avanzaPagina = async() => {
+      if(pagina==paginacion.totpaginas) return; 
+      const n = Number(pagina) + 1;      
+      setPagina(n);
+      const query = {lim: 20, npag: n, act:0, out:0};
+      await cargarVendedores(query)
+   };
+
+   const retrocedePagina = async() => {
+      if(pagina==1) return;
+      const n = Number(pagina) - 1 ;       
+      setPagina(n);
+      const query = {lim: 20, npag: n, act:0, out:0};
+      await cargarVendedores(query)
+   };   
+   
+   const primeraPagina = async() => {
+      setPagina(1);
+      const query = {lim: 20, npag: 1, act:0, out:0};
+      await cargarArticulos(query)
+   };
+
+   const ultimaPagina = async() => {
+     const n = Number(paginacion.totpaginas);
+     setPagina(n)
+     const query = {lim: 20, npag: n, act:0, out:0};
+     await cargarVendedores(query)
+   };
+
  
     return (
         <div className="bg-white p-6 rounded border border-gray-200">
@@ -261,6 +319,7 @@ function GestionVendedores() {
                          <th>Documento</th>
                          <th>Celular</th>
                          <th>Email</th>
+                         <th>Asesor</th>
                          <th>Activo</th>
                          <th>Editar</th>
                          <th>Borrar</th>
@@ -274,8 +333,9 @@ function GestionVendedores() {
                             <td>{ele.gnr_tercero.ter_documento}</td>
                             <td>{ele.gnr_tercero.ter_movil}</td>
                             <td>{ele.gnr_tercero.ter_email}</td>
+                            <td>{ele.outsorcing_id}</td>
                             <td>
-                               {ele.out_activo==1 
+                               {ele.ven_activo==1 
                                     ? <FaToggleOn size="18" className="text-green-400 cursor-pointer hover:text-green-600" onClick={()=>cambiaEstadoVendedor(ele.id)}/> 
                                     : <FaToggleOff size="18" className="text-red-400 cursor-pointer hover:text-red-600" onClick={()=>cambiaEstadoVendedor(ele.id)}/>}
                             </td>
@@ -285,6 +345,16 @@ function GestionVendedores() {
                       )}
                    </tbody>
                 </table>
+
+                {/*paginacion */}
+                <div className="flex w-full mt-4 justify-center">
+                     <button className="bg-blue-400 py-2 px-4 text-center text-white rounded-lg hover:bg-blue-600" onClick={()=>primeraPagina()}><MdFirstPage size="24"/></button> 
+                     <button className="bg-blue-400 py-2 px-4 text-center text-white rounded-lg hover:bg-blue-600 ml-4" onClick={()=>retrocedePagina()}><GrFormPrevious size="24"/></button> 
+                     <h1 className="ml-4 mt-2">Pagina {pagina}</h1>
+                     <button className="bg-blue-400 py-2 px-4 text-center text-white rounded-lg hover:bg-blue-600 ml-4" onClick={()=>avanzaPagina()}><MdOutlineNavigateNext size="24"/></button> 
+                     <button className="bg-blue-400 py-2 px-4 text-center text-white rounded-lg hover:bg-blue-600 ml-4" onClick={()=>ultimaPagina()}><MdOutlineLastPage size="24"/></button> 
+                </div>
+
              </div>
  
              {/* Ventana para actualizacion de datos */}
@@ -399,6 +469,17 @@ function GestionVendedores() {
                           maxLength={100}
                           value={selectedVendedor.email} 
                           onChange={(e)=>cambios(e)}/>
+                   <h1 className=" bg-gray-200 rounded-lg text-center w-full border-gray-300">Outsorcing</h1>
+                   <select name="asesor_id" 
+                           className="col-span-2 border-2 rounded-lg px-2" 
+                           value={selectedVendedor.asesor_id} 
+                           onChange={(e)=>cambios(e)}>
+                      <option value="0">Seleccione Asesor</option>
+                      {asesores.map(ase=>
+                         <option value={ase.id} key={ase.id}>{ase.gnr_tercero.ter_razon}</option>
+                      )}
+                   </select> 
+                   
                    <h1>&nbsp;</h1>
                    <button className="bg-blue-400 text-white rounded-lg hover:bg-blue-600" onClick={()=>guardarDatos()}>Guardar</button>
                    <button className="bg-gray-400 text-white rounded-lg hover:bg-gray-600" onClick={()=>setVentana(false)}>Cancelar</button>

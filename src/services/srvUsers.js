@@ -2,9 +2,9 @@ import { endpoints } from '../config/endpoints';
 
 //esta funcion devuelve el numero de registros de la tabla de usuarios de un roll definido
 export const countUsers = async(query) => {
-    const {roll_id} = query;
+    const {roll_id, act} = query;
     try {
-        const response = await fetch(`${endpoints.users}/count?roll_id=${roll_id}`, {
+        const response = await fetch(`${endpoints.users}/count?roll_id=${roll_id}&act=${act}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -20,9 +20,9 @@ export const countUsers = async(query) => {
 
 //esta funcion devuelve los usuarios 
 export const getUsers = async(query) => {
-    const {pag, lim, npag, roll_id} = query;
+    const {act, lim, npag, roll_id} = query;
     try {
-        const response = await fetch(`${endpoints.users}/count?roll_id=${roll_id}&pag=${pag}&lim=${lim}&npag=${npag}`, {
+        const response = await fetch(`${endpoints.users}?roll_id=${roll_id}&act=${act}&lim=${lim}&npag=${npag}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -147,10 +147,11 @@ export const toggleUser = async(id) => {
     }
 };
 
-//esta funcion obtiene el rol de un usuarios
-export const rolUser = async(id) => {
+//esta funcion devuelve los rolles
+export const getRolles = async() => {
     try {
-        const response = await fetch(`${endpoints.users}/rolles/${id}`, {
+        const response = await fetch(`${endpoints.users}/rolles`, {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },

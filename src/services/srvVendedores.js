@@ -92,10 +92,28 @@ export const saveVendedor = async(datos) => {
     }
 };
 
+//esta funcion devuelve los vendedores
+export const updateVendedor = async(datos, id) => {
+    try {
+        const response = await fetch(`${endpoints.vendedores}/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datos)
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
 //esta funcion cambia estado de un vendedor
 export const toggleVendedor = async(id) => {
     try {
-        const response = await fetch(`${endpoints.vendedores}/${id}`, {
+        const response = await fetch(`${endpoints.vendedores}/toggle/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",

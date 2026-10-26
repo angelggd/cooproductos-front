@@ -187,6 +187,7 @@ function GestionAsesores() {
          ter_nombre1:selectedAsesor.nombre1,
          ter_nombre2:selectedAsesor.nombre2,
          ter_documento:selectedAsesor.documento,
+         ter_direccion:selectedAsesor.direccion,
          tipodoc_id:selectedAsesor.tipodoc,
          ciudad_id:selectedAsesor.ciudad_id,
          ter_telefono:selectedAsesor.telefono,
