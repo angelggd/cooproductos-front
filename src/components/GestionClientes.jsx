@@ -9,7 +9,8 @@ import { MdFirstPage, MdOutlineLastPage, MdOutlineNavigateNext } from "react-ico
 import { GrFormPrevious } from "react-icons/gr";
 import  {Dialog}  from 'primereact/dialog';
 import { saveTercero, updateTercero } from '../services/srvTerceros';
-import { getPaises, getDptos, getCiudades, getTipodoc,
+import { saveUser} from '../services/srvUsers';
+import { getPaises, getDptos, getCiudades, getTipodoc, getCiudad,
          getEstcivil, getNivEducativo, getOcupaciones, getVivienda } from '../services/srvGenerales';
 import { getPagadurias } from '../services/srvCreditos';
 
@@ -47,6 +48,7 @@ function GestionClientes() {
         dpto_id: 0,
         ciudad_id: 0,
         sexo: 0,
+        barrio: "",
         ter_email: "",
         ter_direccion : "",
         ter_telefono: "",
@@ -70,6 +72,8 @@ function GestionClientes() {
         sueldo:0,
         dirempresa:"",
         telempresa:"",
+        usuario_id: 0,
+        cli_activo: 1,
     });
 
  
@@ -106,6 +110,15 @@ function GestionClientes() {
         if(x==1) setCiudades(resul.data);
         if(x==2) setCiudadesRes(resul.data);
         if(x==3) setCiulab(resul.data);
+    };
+
+    //devuelve ciudad por su id
+    const cargaCiudadById = async(id) => {
+       const resul = await getCiudad(id);
+       if(resul.status!==200) {
+          return {id:0, departamento_id:0};
+       };
+       return resul.data; 
     };
  
     //cargar tipo de documento
@@ -165,6 +178,7 @@ function GestionClientes() {
         dpto_id: 0,
         ciudad_id: 0,
         sexo: 0,
+        barrio:"",
         ter_email: "",
         ter_direccion : "",
         ter_telefono: "",
@@ -188,6 +202,8 @@ function GestionClientes() {
         sueldo:0,
         dirempresa:"",
         telempresa:"",
+        cli_activo:1,
+        usuario_id:0,
        })
     };
  
@@ -232,23 +248,61 @@ function GestionClientes() {
        if(!resul.status==200) return;
        const registro = resul.data;
        const dpt = registro.gnr_tercero.gnr_ciudad.departamento_id;
+       const idpais = registro.gnr_tercero.gnr_ciudad.gnr_departamento.pais_id;
+       cargarDptos(idpais, 1); 
+       cargarCiudades(dpt, 1);
+       const ciu_res = await cargaCiudadById(registro.ciudadres_id);
+       cargarDptos(1, 2);
+       cargarCiudades(ciu_res.departamento_id, 2);
+       cargarDptos(1, 3);
+       let xciulab = 0;
+       let xdptolab = 0;
+       let sueldo = 0;
+       let idempresa = 0;
+       const detacli = registro.cre_detaclientes[0];
+       if(detacli) {
+          const ciu_lab = await cargaCiudadById(detacli.ciudad_id);
+          xdptolab = ciu_lab.departamento_id;
+          cargarCiudades(xdptolab, 3);
+          xciulab = detacli.ciudad_id;
+          sueldo = detacli.det_sueldo;
+          idempresa = detacli.pagaduria_id;
+       };       
        setCliente({
           id:registro.id,
-          razon:registro.gnr_tercero.ter_razon,
-          apellido1:registro.gnr_tercero.ter_apellido1,
-          apellido2:registro.gnr_tercero.ter_apellido2,
-          nombre1:registro.gnr_tercero.ter_nombre1,
-          nombre2:registro.gnr_tercero.ter_nombre2,
-          tipodoc:registro.gnr_tercero.tipodoc_id,
-          documento:registro.gnr_tercero.ter_documento,
+          ter_razon:registro.gnr_tercero.ter_razon,
+          ter_apellido1:registro.gnr_tercero.ter_apellido1,
+          ter_apellido2:registro.gnr_tercero.ter_apellido2,
+          ter_nombre1:registro.gnr_tercero.ter_nombre1,
+          ter_nombre2:registro.gnr_tercero.ter_nombre2,
+          tipodoc_id:registro.gnr_tercero.tipodoc_id,
+          ter_documento:registro.gnr_tercero.ter_documento,
           dpto_id:dpt,
+          pais_id:registro.gnr_tercero.gnr_ciudad.gnr_departamento.pais_id,
+          barrio: registro.cli_barrio,
           ciudad_id:registro.gnr_tercero.ciudad_id,
-          direccion:registro.gnr_tercero.ter_direccion,
-          telefono:registro.gnr_tercero.ter_telefono,
-          celular:registro.gnr_tercero.ter_movil,
-          email:registro.gnr_tercero.ter_email,
+          ter_direccion:registro.gnr_tercero.ter_direccion,
+          ter_telefono:registro.gnr_tercero.ter_telefono,
+          ter_celular:registro.gnr_tercero.ter_movil,
+          ter_email:registro.gnr_tercero.ter_email,
           tercero_id: registro.tercero_id,
-          activo:registro.out_activo,
+          cli_activo:registro.cli_activo,
+          usuario_id:registro.usuario_id,
+          fechanac: registro.cli_fechanac,
+          dptores_id:ciu_res.departamento_id,
+          ciures_id: registro.ciudadres_id,
+          dptolab_id:xdptolab,
+          ciulab_id:xciulab,
+          fechaing: detacli.det_ingreso,
+          cargo: detacli.det_cargo,
+          sueldo: sueldo,
+          empresa_id: idempresa, 
+          ocupacion_id: registro.ocupacion_id,
+          niveducativo_id: registro.niveducativo_id,
+          vivienda_id: registro.vivienda_id,
+          sexo: registro.cli_sexo,
+          personasacargo:registro.cli_personasacargo,
+          estcivil_id: registro.estadocivil_id,          
        });
        cargarCiudades(dpt);
        abrirVentana();   
@@ -258,33 +312,49 @@ function GestionClientes() {
     const cambios = (e) => {
        const propiedad = e.target.name;
        const valor = e.target.value;
-       if(propiedad=="dpto_id") {
-          setcliente({...cliente, dpto_id:valor, ciudad_id:0});
-          cargarCiudades(valor);
+       if(propiedad=="pais_id") {
+          setCliente({...cliente, pais_id:valor, dpto_id:0, ciudad_id:0});
+          cargarDptos(valor, 1);
+          setCiudades([]);
           return;
        };
-       if(propiedad=="apellido1") {
-             const raz = valor+" "+cliente.apellido2+" "+cliente.nombre1+" "+cliente.nombre2;
-             setcliente({...cliente, [propiedad]:valor, razon:raz});
+       if(propiedad=="dpto_id") {
+          setCliente({...cliente, dpto_id:valor, ciudad_id:0});
+          cargarCiudades(valor, 1);
+          return;
+       };
+       if(propiedad=="dptores_id") {
+          setCliente({...cliente, dptores_id:valor, ciudadres_id:0});
+          cargarCiudades(valor, 2);
+          return;
+       };
+       if(propiedad=="dptolab_id") {
+          setCliente({...cliente, dptolab_id:valor, ciudadlab_id:0});
+          cargarCiudades(valor, 3);
+          return;
+       };       
+       if(propiedad=="ter_apellido1") {
+             const raz = valor+" "+cliente.ter_apellido2+" "+cliente.ter_nombre1+" "+cliente.ter_nombre2;
+             setCliente({...cliente, [propiedad]:valor, ter_razon:raz});
              return;
        };
-       if(propiedad=="apellido2") {
-             const raz = cliente.apellido1+" "+valor+" "+cliente.nombre1+" "+cliente.nombre2;
-             setcliente({...cliente, [propiedad]:valor, razon:raz});
+       if(propiedad=="ter_apellido2") {
+             const raz = cliente.ter_apellido1+" "+valor+" "+cliente.ter_nombre1+" "+cliente.ter_nombre2;
+             setCliente({...cliente, [propiedad]:valor, ter_razon:raz});
              return;
        };
-       if(propiedad=="nombre1") {
-             const raz = cliente.apellido1+" "+cliente.apellido2+" "+valor+" "+cliente.nombre2;
-             setcliente({...cliente, [propiedad]:valor, razon:raz});
+       if(propiedad=="ter_nombre1") {
+             const raz = cliente.ter_apellido1+" "+cliente.ter_apellido2+" "+valor+" "+cliente.ter_nombre2;
+             setCliente({...cliente, [propiedad]:valor, ter_razon:raz});
              return;
        };
-       if(propiedad=="nombre2") {
-             const raz = cliente.apellido1+" "+cliente.apellido2+" "+cliente.nombre1+" "+valor;
-             setcliente({...cliente, [propiedad]:valor, razon:raz});
+       if(propiedad=="ter_nombre2") {
+             const raz = cliente.ter_apellido1+" "+cliente.ter_apellido2+" "+cliente.ter_nombre1+" "+valor;
+             setCliente({...cliente, [propiedad]:valor, ter_razon:raz});
              return;
        };
  
-       setcliente({...cliente, [propiedad]:valor})
+       setCliente({...cliente, [propiedad]:valor})
     };
  
     //cambiar de estado un cliente
@@ -296,7 +366,7 @@ function GestionClientes() {
        };
        toast.success("Estado actualizado");
        let query = {lim: 20, npag: pagina, act:0};
-       cargaclientes(query);
+       cargaClientes(query);
     };
  
     //abre ventana de dialogo para creacion o modificacion de un cliente
@@ -311,12 +381,20 @@ function GestionClientes() {
  
     //validacion de informacion
     const validacion = () => {
-       if(cliente.tipodoc==0) return {error:true, msg:"Debe seleccionar tipo de documento"};
-       if(cliente.ciudad_id==0) return {error:true, msg:"Debe seleccionar ciudad"};
-       if(cliente.documento.length<5) return {error:true, msg:"Numero de documento debe tener al menos 5 caracteres"};
-       if(cliente.apellido1.length<3) return {error:true, msg:"Primer Apellido debe tener al menos 3 caracteres"};
-       if(cliente.nombre1.length<3) return {error:true, msg:"Primer Nombre debe tener al menos 3 caracteres"};
-       if(cliente.email.length<6) return {error:true, msg:"Email debe tener al menos 6 caracteres"};
+        if(cliente.ter_email.length<6) return {error:true, msg:"Email debe tener al menos 6 caracteres"};
+        if(cliente.ter_apellido1.length<3) return {error:true, msg:"Primer apellido debe tener al menos 3 caracteres"};
+        if(cliente.ter_nombre1.length<3) return {error:true, msg:"Primer nombre debe tener al menos 3 caracteres"};
+        if(cliente.ter_documento.length<4) return {error:true, msg:"Numero documento debe tener al menos 4 caracteres"};
+        if(cliente.tipodoc_id==0) return {error:true, msg:"Debe seleccionar tipo de documento"};
+        if(cliente.ciudad_id==0) return {error:true, msg:"Debe seleccionar ciudad de nacimiento"};
+        if(cliente.ciures_id==0) return {error:true, msg:"Debe seleccionar ciudad de residencia"};
+        if(cliente.ter_direccion.length==0) return {error:true, msg:"Debe digitar direccion de residencia"};
+        if(cliente.ter_telefono.length==0 && cliente.ter_celular.length==0) return {error:true, msg:"Debe digitar teléfono o celular"};
+        if(cliente.vivienda_id==0) return {error:true, msg:"Debe seleccionar tipo de vivienda"};
+        if(cliente.ocupacion_id==0) return {error:true, msg:"Debe seleccionar ocupacion"};
+        if(cliente.sexo==0) return {error:true, msg:"Debe seleccionar sexo"};
+        if(cliente.fechanac === "" ) return {error:true, msg:"Fecha de nacimiento no valida"};
+        if(cliente.fechaing === "" ) return {error:true, msg:"Fecha de ingreso no valida"};
        return {error:false, msg:""}
     };
  
@@ -328,20 +406,21 @@ function GestionClientes() {
           return;
        };
        let idtercero = cliente.tercero_id;
+       let idusuario = cliente.usuario_id;
        const datosTercero = {
-          ter_razon:cliente.razon,
-          ter_apellido1:cliente.apellido1,
-          ter_apellido2:cliente.apellido2,
-          ter_nombre1:cliente.nombre1,
-          ter_nombre2:cliente.nombre2,
-          ter_documento:cliente.documento,
-          ter_direccion:cliente.direccion,
-          tipodoc_id:cliente.tipodoc,
+          ter_razon:cliente.ter_razon,
+          ter_apellido1:cliente.ter_apellido1,
+          ter_apellido2:cliente.ter_apellido2,
+          ter_nombre1:cliente.ter_nombre1,
+          ter_nombre2:cliente.ter_nombre2,
+          ter_documento:cliente.ter_documento,
+          ter_direccion:cliente.ter_direccion,
+          tipodoc_id:cliente.tipodoc_id,
           ciudad_id:cliente.ciudad_id,
-          ter_telefono:cliente.telefono,
-          ter_movil:cliente.celular,
-          ter_email:cliente.email,
-          tipopersona_id:cliente.tipodoc==8 ?1 :2,
+          ter_telefono:cliente.ter_telefono,
+          ter_movil:cliente.ter_celular,
+          ter_email:cliente.ter_email,
+          tipopersona_id:cliente.tipodoc_id==8 ?1 :2,
           respfiscal_id:1,
        };
        if(idtercero==0) {
@@ -362,15 +441,51 @@ function GestionClientes() {
           };
           toast.success("Datos del tercero actualizados");
        };
+       //si no existe el usuario lo creamos
+       if(idusuario==0) {
+            const datosUser = {
+               usu_login: cliente.ter_email,
+               tercero_id: idtercero,
+               roll_id: 5,
+               documento: cliente.ter_documento,
+            };
+            const resul3 = await saveUser(datosUser);
+            if(resul3.status!==200) {
+                toast.error("Ocurrio un error al crear el usuario");
+                return;
+            };
+            idusuario = resul3.data.resul.id;
+            toast.success("Usuario creado");
+       };
        const datosCliente = {
           id: cliente.id,
           tercero_id: idtercero,
           cli_activo: cliente.activo,
+          cli_fallecido: 0,
+          cli_razonsocial: cliente.ter_razon,
+          cli_fechanac: cliente.fechanac,
+          cli_sexo: cliente.sexo,
+          cli_barrio: cliente.barrio,
+          ciudadres_id: cliente.ciures_id,
+          ocupacion_id: cliente.ocupacion_id,
+          estadocivil_id: cliente.estcivil_id,
+          niveducativo_id: cliente.niveducativo_id,
+          vivienda_id: cliente.vivienda_id,
+          cli_personasacargo: cliente.personasacargo,
+          usuario_id: idusuario,
+          pagaduria: {
+                det_activa: 1,
+                det_ingreso: cliente.fechaing,
+                det_cargo: cliente.cargo,
+                det_sueldo: cliente.sueldo,
+                ciudad_id: cliente.ciulab_id,
+                pagaduria_id: cliente.empresa_id,
+          }
        };
        if(cliente.id==0) {
           const resul3 = await saveCliente(datosCliente);
           if(!resul3.status==200) {
-             toast.error("Ocurrio un error al actualizar Cliente");
+             toast.error("Ocurrio un error al crear Cliente");
              return;
           };
        } else {
@@ -382,7 +497,7 @@ function GestionClientes() {
        };   
        setVentana(false);
        toast.success("Registro actualizado");
-       let query = {lim: 20, npag: pagina, act:0, out:0};
+       let query = {lim: 20, npag: pagina, act:0};
        cargaClientes(query);
     };
 
@@ -390,7 +505,7 @@ function GestionClientes() {
       if(pagina==paginacion.totpaginas) return; 
       const n = Number(pagina) + 1;      
       setPagina(n);
-      const query = {lim: 20, npag: n, act:0, out:0};
+      const query = {lim: 20, npag: n, act:0};
       await cargaClientes(query)
    };
 
@@ -398,20 +513,20 @@ function GestionClientes() {
       if(pagina==1) return;
       const n = Number(pagina) - 1 ;       
       setPagina(n);
-      const query = {lim: 20, npag: n, act:0, out:0};
+      const query = {lim: 20, npag: n, act:0};
       await cargaClientes(query)
    };   
    
    const primeraPagina = async() => {
       setPagina(1);
-      const query = {lim: 20, npag: 1, act:0, out:0};
+      const query = {lim: 20, npag: 1, act:0};
       await cargaClientes(query)
    };
 
    const ultimaPagina = async() => {
      const n = Number(paginacion.totpaginas);
      setPagina(n)
-     const query = {lim: 20, npag: n, act:0, out:0};
+     const query = {lim: 20, npag: n, act:0};
      await cargaClientes(query)
    };
 
@@ -419,8 +534,8 @@ function GestionClientes() {
     return (
         <div className="bg-white p-6 rounded border border-gray-200">
              <div className="flex justify-between mb-2">
-             <h3 className="text-lg font-bold text-primary ">Gestión de clientes</h3>
-             <MdOutlineCreateNewFolder size="24" className="text-yellow-400 hover:text-yellow-600 cursor-pointer" onClick={()=>abrirVentana(0)}/>
+                <h3 className="text-lg font-bold text-primary ">Gestión de clientes</h3>
+                <MdOutlineCreateNewFolder size="24" className="text-yellow-400 hover:text-yellow-600 cursor-pointer" onClick={()=>abrirVentana(0)}/>
              </div>
              <p className="text-sm text-gray-600 mb-4">Registro y administración de clientes.</p>
              <div className="p-2 border border-dashed border-gray-300 rounded text-center text-sm text-gray-500">
@@ -446,7 +561,7 @@ function GestionClientes() {
                             <td>{ele.gnr_tercero.ter_movil}</td>
                             <td>{ele.gnr_tercero.ter_email}</td>
                             <td>
-                               {ele.ven_activo==1 
+                               {ele.cli_activo==1 
                                     ? <FaToggleOn size="18" className="text-green-400 cursor-pointer hover:text-green-600" onClick={()=>cambiaEstadoCliente(ele.id)}/> 
                                     : <FaToggleOff size="18" className="text-red-400 cursor-pointer hover:text-red-600" onClick={()=>cambiaEstadoCliente(ele.id)}/>}
                             </td>
@@ -471,10 +586,10 @@ function GestionClientes() {
              {/* Ventana para actualizacion de datos */}
              <Dialog header="" 
                 visible={ventana} 
-                className="w-full md:w-[100%] border-2 bg-gray-100 p-2 text-left text-[18px] rounded-lg text-black" 
+                className="w-full  border-2 bg-gray-100 p-2 text-left text-[18px] rounded-lg text-black" 
                 onHide={() => { if (!ventana) return; setVentana(false)}}>
                 <h3 className="w-full text-center">Actualizacion Registro</h3>
-                <div className="grid grid-cols-2 gap-2 p-6 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-6 mt-4">
 
                 {/* Informacion personal */}
                 <div className="w-full shadow-lg shadow-accent p-2">
@@ -768,6 +883,10 @@ function GestionClientes() {
                     </div>            
                 </div>
                 </div>
+                <div className="w-full flex justify-center">
+                   <button className="rounded-lg bg-green-400 text-white px-6 py-2  hover:bg-green-600 cursor-pointer" onClick={()=>guardarDatos()}>Guardar Cambios</button>
+                   <button className="ml-4 rounded-lg bg-gray-400 text-white p-2 hover:bg-gray-600 cursor-pointer" onClick={()=>setVentana(false)}>Abandonar Cambios</button>
+                </div> 
              </Dialog>
         </div>
     )

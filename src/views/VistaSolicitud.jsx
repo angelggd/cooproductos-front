@@ -345,6 +345,8 @@ function VistaSolicitud() {
         if(cliente.vivienda_id==0) return {error:true, msg:"Debe seleccionar tipo de vivienda"};
         if(cliente.ocupacion_id==0) return {error:true, msg:"Debe seleccionar ocupacion"};
         if(cliente.sexo==0) return {error:true, msg:"Debe seleccionar sexo"};
+        if(cliente.fechanac === "" ) return {error:true, msg:"Fecha de nacimiento no valida"};
+        if(cliente.fechaing === "" ) return {error:true, msg:"Fecha de ingreso no valida"};
         return {error:false, msg:""}
     };
 
