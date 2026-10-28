@@ -347,6 +347,7 @@ function VistaSolicitud() {
         if(cliente.sexo==0) return {error:true, msg:"Debe seleccionar sexo"};
         if(cliente.fechanac === "" ) return {error:true, msg:"Fecha de nacimiento no valida"};
         if(cliente.fechaing === "" ) return {error:true, msg:"Fecha de ingreso no valida"};
+        if(cliente.vendedor_id == 0 ) return {error:true, msg:"Debe seleccionar un vendedor"};
         return {error:false, msg:""}
     };
 
@@ -475,7 +476,7 @@ function VistaSolicitud() {
           toast.success("Cliente actualizado");
           idcliente = nuevocliente.id;
        };  //fin grabacion del cliente
-
+       toast.info(idcliente)
        //por ultimo procedemos a guardar la solicitud de credito
        const hoy = new Date();
        const fechaC = devuelveFechaFormateada(hoy);

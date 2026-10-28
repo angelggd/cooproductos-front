@@ -10,9 +10,9 @@ export const devuelveFechaFormateada = (hoy) => {
 
 //esta funcion devuelve el numero de registros de la tabla de solicitudes
 export const countSolicitudes = async(query, token) => {
-    const {estado, vendedor, usuario_id, cliente, lim, npag} = query;    
+    const {estado, vendedor_id, usuario_id, cliente_id, lim, npag, roll_id, tercero_id} = query;    
     try {
-        const response = await fetch(`${endpoints.solicitudes}/count?cliente=${cliente}&lim=${lim}&npag=${npag}&estado=${estado}&vendedor=${vendedor}&usuario_id=${usuario_id}`, {
+        const response = await fetch(`${endpoints.solicitudes}/count?cliente_id=${cliente_id}&lim=${lim}&npag=${npag}&estado=${estado}&vendedor_id=${vendedor_id}&usuario_id=${usuario_id}&tercero_id=${tercero_id}&roll_id=${roll_id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -29,9 +29,9 @@ export const countSolicitudes = async(query, token) => {
 
 //esta funcion devuelve las solicitudes
 export const getSolicitudes = async(query, token) => {
-    const {estado, vendedor, usuario_id, cliente, lim, npag} = query;   
+    const {estado, vendedor_id, usuario_id, cliente_id, lim, npag, tercero_id, roll_id} = query;   
     try {
-        const response = await fetch(`${endpoints.solicitudes}?cliente=${cliente}&lim=${lim}&npag=${npag}&estado=${estado}&vendedor=${vendedor}&usuario_id=${usuario_id}`, {
+        const response = await fetch(`${endpoints.solicitudes}?cliente_id=${cliente_id}&lim=${lim}&npag=${npag}&estado=${estado}&vendedor_id=${vendedor_id}&usuario_id=${usuario_id}&tercero_id=${tercero_id}&roll_id=${roll_id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -92,6 +92,24 @@ export const updateSolicitud = async(datos, id) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(datos)
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+//esta funcion devuelve el seguimiento de la solicitud por su id
+export const getSeguimiento = async(id, token) => {
+    try {
+        const response = await fetch(`${endpoints.solicitudes}/seguimiento/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
         });
         const data = await response.json();
         return {status: 200, data}
