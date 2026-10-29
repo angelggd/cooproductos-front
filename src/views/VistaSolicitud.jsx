@@ -563,53 +563,55 @@ function VistaSolicitud() {
     <div className="font-sans bg-background text-gray-800 min-h-screen scroll-smooth">
        {/* Navbar */}
        <Navbar/>
-       <div className="w-full flex justify-center mt-4 p-4">
-          <div className="w-[40%] shadow-lg shadow-accent p-4">
-              <h1 className="bg-accent text-white text-[20px] font-semibold text-center rounded-lg">DATOS SOLICTUD DE CREDITO</h1>
-              <div className="grid grid-cols-3 gap-2 text-[18px] font-bold">
-                 {solicitud.modelo==2 &&  
-                    <h1 className="col-span-2 bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Monto solicitado</h1>
-                 }
-                 {solicitud.modelo==2 &&  
-                    <h1 className="col-span-1 border-2 border-gray-200 text-center rounded-lg">${solicitud.monto.toLocaleString('es-CO', { maximumFractionDigits: 0 })}</h1>
-                 }
-                 <h1 className="col-span-2 bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Tasa del crédito</h1>
-                 <h1 className="col-span-1 border-2 border-gray-200 text-center rounded-lg">{Number(solicitud.tasa).toFixed(6)}</h1>
-                 <h1 className="col-span-2 bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Meses pactados</h1>
-                 <h1 className="col-span-1 border-2 border-gray-200 text-center rounded-lg">{solicitud.meses}</h1>
-                 <h1 className="col-span-2 bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Valor de la cuota</h1>
-                 <h1 className="col-span-1 border-2 border-gray-200 text-center rounded-lg">${solicitud.cuota.toLocaleString('es-CO', { maximumFractionDigits: 0 })}</h1>
-                 {solicitud.modelo==1 &&
-                    <h1 className="col-span-2 bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Monto aprobado</h1>
-                 }
-                 {solicitud.modelo==1 &&
-                    <h1 className="col-span-1 border-2 border-gray-200 text-center rounded-lg">${solicitud.monto.toLocaleString('es-CO', { maximumFractionDigits: 0 })}</h1>
-                 }
-                 <h1 className="col-span-1 bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Gestor Comercial</h1>
-                 <select className="col-span-2 border-2 px-2 border-gray-300 rounded-lg text-[16px]"
-                         value={cliente.vendedor_id}
-                         onChange={(e)=>cambios(e)}
-                         name="vendedor_id">
-                    <option value="0">Seleccione Gestor</option>
-                    {vendedor.map(ven=>
-                        <option key={ven.id} value={ven.id}>{ven.ter_razon}</option>
-                    )}
-                 </select>
+       <div className="w-full flex justify-center md:mt-4 md:p-4">
+          <div className="w-full md:w-[80%] shadow-lg shadow-accent p-4">
+              <h1 className="text-accent text-[20px] font-semibold text-center rounded-lg">SOLICITUD DE CREDITO</h1>
+              <h1 className="text-[14px] text-center">Completa tus datos para continuar</h1>
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-1 md:gap-2 text-[14px] md:text-[18px] font-bold mt-2 text-gray-500">
+                  <div>  
+                      <h1 className="bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Monto solicitado</h1>
+                      <h1 className="border-2 border-gray-200 text-center rounded-lg">${solicitud.monto.toLocaleString('es-CO', { maximumFractionDigits: 0 })}</h1>
+                  </div>   
+                  <div>
+                      <h1 className="bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Tasa del crédito</h1>
+                      <h1 className="border-2 border-gray-200 text-center rounded-lg">{Number(solicitud.tasa).toFixed(6)}</h1>
+                  </div>
+                  <div>
+                      <h1 className="bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Meses pactados</h1>
+                      <h1 className="border-2 border-gray-200 text-center rounded-lg">{solicitud.meses}</h1>
+                  </div>
+                  <div>
+                      <h1 className="bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Valor de la cuota</h1>
+                      <h1 className="border-2 border-gray-200 text-center rounded-lg">${solicitud.cuota.toLocaleString('es-CO', { maximumFractionDigits: 0 })}</h1>
+                  </div>
+                  <div className="col-span-2">
+                      <h1 className="bg-green-50 border-2 border-green-300 px-2 rounded-lg text-center">Gestor Comercial</h1>
+                      <select className="w-full col-span-2 border-2 px-2 border-gray-300 rounded-lg"
+                        value={cliente.vendedor_id}
+                        onChange={(e)=>cambios(e)}
+                        name="vendedor_id">
+                        <option value="0">Seleccione Gestor</option>
+                        {vendedor.map(ven=>
+                           <option key={ven.id} value={ven.id}>{ven.ter_razon}</option>
+                        )}
+                      </select>
+                  </div>
               </div>
           </div>  
 
        </div>
        {/* Formulario para capturar toda la informacion del cliente */}
-       <div className="w-full flex mt-4 p-4">
+       <div className="w-full md:flex mt-2 p-4 justify-center">
           {/* Informacion personal */}
-          <div className="w-[50%] shadow-lg shadow-accent p-2">
-              <h1 className="bg-accent text-white text-[20px] font-bold text-center rounded-lg">INFORMACION PERSONAL</h1>
-              <div className="grid grid-cols-3 gap-1 text-[14px] mt-2">
+          <div className="w-full md:w-[40%] shadow-lg shadow-accent p-2">
+              <h1 className="bg-accent text-white text-[16px] md:text-[20px] font-bold text-center rounded-lg">INFORMACION PERSONAL</h1>
+              <div className="grid grid-cols-2 gap-1 text-[11px] md:text-[14px] mt-2 text-gray-500">
                  {/* razon social */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Razón Social</h1>
+                 <h1 className="col-span-2 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Razón Social</h1>
                  <h1 className="col-span-2 border-2 px-2 border-gray-300 rounded-lg">{cliente.ter_razon}</h1>
                  {/* Tipo y numero de documento */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Tipo y Número Documento</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Tipo Documento</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Número Documento</h1>
                  <select className="col-span-1 border-2 px-2 border-gray-300 rounded-lg" 
                          value={cliente.tipodoc_id}
                          onChange={(e)=>cambios(e)}
@@ -626,7 +628,8 @@ function VistaSolicitud() {
                         onChange={(e)=>cambios(e)}
                         className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" />
                  {/* Apellidos */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Apellidos</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Primer Apellido</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Segundo Apellido</h1>
                  <input type="text" 
                         name="ter_apellido1"
                         placeholder="Primer Apellido"
@@ -640,7 +643,8 @@ function VistaSolicitud() {
                         onChange={(e)=>cambios(e)}
                         className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" />
                  {/* nombres */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Nombres</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Primer Nombre</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Segundo Nombre</h1>
                  <input type="text" 
                         name="ter_nombre1"
                         placeholder="Primer Nombre"
@@ -654,7 +658,8 @@ function VistaSolicitud() {
                         onChange={(e)=>cambios(e)}
                         className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" />
                  {/* Pais y fecha de nacimiento */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Pais y Fecha Nacimiento</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Pais de Nacimiento</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Fecha Nacimiento</h1>
                  <select className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg"
                          onChange={(e)=>cambios(e)}
                          value={cliente.pais_id}
@@ -671,7 +676,8 @@ function VistaSolicitud() {
                         onChange={(e)=>cambios(e)}
                         className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" />
                  {/* Dpto y ciudad de nacimiento */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Dpto y Ciudad Nacimiento</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Dpto de Nacimiento</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Ciudad Nacimiento</h1>
                  <select className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" 
                          onChange={(e)=>cambios(e)}
                          value={cliente.dpto_id}
@@ -691,7 +697,8 @@ function VistaSolicitud() {
                     )}
                  </select>
                  {/* Dpto y ciudad de residencia */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Dpto y Ciudad Residencia</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Dpto de Residencia</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Ciudad de Residencia</h1>
                  <select className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg"
                          value={cliente.dptores_id}
                          onChange={(e)=>cambios(e)}
@@ -711,7 +718,8 @@ function VistaSolicitud() {
                     )}
                  </select>
                  {/* direccion y barrio */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Dirección y Barrio</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Dirección Residencia</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Barrio Residencia</h1>
                  <input type="text" 
                         name="ter_direccion"
                         placeholder="Dirección"
@@ -725,7 +733,8 @@ function VistaSolicitud() {
                         onChange={(e)=>cambios(e)}
                         className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" />
                  {/* Telefono fijo y celular */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Telefono fijo y Celular</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Telefono fijo</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Número Celular</h1>
                  <input type="text" 
                         name="ter_telefono"
                         placeholder="Telefono fijo"
@@ -739,8 +748,8 @@ function VistaSolicitud() {
                         onChange={(e)=>cambios(e)}
                         className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" />
                  {/* correo electronico */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Correo Electrónico</h1>
-                 <input type="email" 
+                 <h1 className="col-span-2 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Correo Electrónico</h1>
+                  <input type="email" 
                         name="ter_email"
                         placeholder="Email"
                         value={cliente.ter_email}
@@ -749,11 +758,11 @@ function VistaSolicitud() {
               </div>
           </div>
           {/*Informacion laboral*/}
-          <div className="w-[50%] ml-3 shadow-lg shadow-accent p-2">
-             <h1 className="bg-accent text-white text-[20px] font-bold text-center rounded-lg">INFORMACION LABORAL</h1>
-             <div className="grid grid-cols-3 gap-1 text-[14px] mt-2">
+          <div className="w-full md:w-[40%] md:ml-3 shadow-lg shadow-accent p-2">
+             <h1 className="bg-accent text-white text-[16px] md:text-[20px] font-bold text-center rounded-lg">INFORMACION LABORAL</h1>
+             <div className="grid grid-cols-2 gap-1 text-[12px] md:text-[14px] mt-2 text-gray-600">
                  {/* pagaduria */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Empresa Laboral en Convenio</h1>
+                 <h1 className="col-span-2 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Empresa Laboral</h1>
                  <select className="col-span-2 w-full border-2 px-2 border-gray-300 rounded-lg"
                          value={cliente.empresa_id}
                          onChange={(e)=>cambios(e)}
@@ -763,8 +772,8 @@ function VistaSolicitud() {
                         <option key={pag.id} value={pag.id}>{pag.gnr_tercero.ter_razon}</option>
                     )}
                  </select>
-                {/* otra empresa no en convenio */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Otra Empresa</h1>
+                 {/* otra empresa no en convenio */}
+                 <h1 className="col-span-2 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Otra Empresa</h1>                
                  <input type="text" 
                         name="empresa"
                         placeholder="Empresa donde labora"
@@ -772,7 +781,8 @@ function VistaSolicitud() {
                         onChange={(e)=>cambios(e)}
                         className="col-span-2 w-full border-2 px-2 border-gray-300 rounded-lg" />
                  {/* Cargo y sueldo*/}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Cargo y Sueldo</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Cargo</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Sueldo</h1>
                  <input type="text" 
                         name="cargo"
                         placeholder="Digite Cargo"
@@ -787,7 +797,8 @@ function VistaSolicitud() {
                         onChange={(e)=>cambios(e)}
                         className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" />
                  {/* fECHA DE iNGRESO*/}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Fecha Ingreso</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Fecha de Ingreso</h1>                 
+                 <h1></h1>
                  <input type="date" 
                         name="fechaing"
                         placeholder="Digite fecha Ingreso"
@@ -796,7 +807,8 @@ function VistaSolicitud() {
                         className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" />
                 <h1 className="col-span-1">&nbsp;</h1>    
                  {/* Direccion y telefono empresa*/}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Dirección y Teléfono</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Dirección</h1>                 
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Teléfono</h1>
                  <input type="text" 
                         name="dirempresa"
                         placeholder="Digite Dirección Empresa"
@@ -810,7 +822,8 @@ function VistaSolicitud() {
                         onChange={(e)=>cambios(e)}
                         className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" />
                  {/* Dpto y ciudad laboral */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Dpto y Ciudad Laboral</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Departamento Laboral</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Ciudad Laboral</h1>
                  <select className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" 
                          value={cliente.dptolab_id}
                          onChange={(e)=>cambios(e)}
@@ -830,10 +843,11 @@ function VistaSolicitud() {
                     )}
                  </select>
 
-                <h1 className="col-span-3 bg-accent text-white text-[20px] font-bold text-center rounded-lg">INFORMACION ADICIONAL</h1>
+                <h1 className="col-span-2 bg-accent text-white text-[16px] md:text-[20px] font-bold text-center rounded-lg">INFORMACION ADICIONAL</h1>
 
                  {/* sexo y estado civil */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Sexo y Estado civil</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Sexo</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Estado civil</h1>
                  <select className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" 
                          value={cliente.sexo}
                          onChange={(e)=>cambios(e)}
@@ -852,7 +866,8 @@ function VistaSolicitud() {
                     )}
                  </select>
                  {/* nivel educcativo y ocupacion */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Nivel Educativo y Ocupación</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Nivel educativo</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Ocupación</h1>
                  <select className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" 
                          value={cliente.niveducativo_id}
                          onChange={(e)=>cambios(e)}
@@ -872,7 +887,8 @@ function VistaSolicitud() {
                     )}
                  </select>
                  {/* tipo vivienda, personas a cargo */}
-                 <h1 className="col-span-1 bg-green-100 text-black rounded-lg text-center border-2 border-green-200">Vivienda y personas a cargo</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Tipo vivienda</h1>
+                 <h1 className="col-span-1 text-black rounded-lg border-2 border-gray-50 font-semibold text-[10px] md:text-[12px]">Personas a cargo</h1>
                  <select className="col-span-1 w-full border-2 px-2 border-gray-300 rounded-lg" 
                          onChange={(e)=>cambios(e)}
                          value={cliente.vivienda_id}
@@ -896,8 +912,8 @@ function VistaSolicitud() {
        </div>
        {/*se oculta el boton cuando esta en proceso de grabacion */}
        {grabando == false &&
-          <div className="w-full flex mt-4 justify-center">
-              <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[20px] cursor-pointer hover:bg-green-800"
+          <div className="w-full flex mt-2 md:mt-4 justify-center">
+              <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[16px] md:text-[20px] cursor-pointer hover:bg-green-800"
               onClick={()=>paso1()}
               >Enviar Solicitud</button>
           </div>
