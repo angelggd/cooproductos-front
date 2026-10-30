@@ -35,9 +35,16 @@ export default function Navbar() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         
         {/* Logo */}
-        <h1 className="text-2xl text-primary font-bold tracking-wider cursor-pointer" onClick={()=>navigate('/')}>
+{/*         <h1 className="text-2xl text-primary font-bold tracking-wider cursor-pointer" onClick={()=>navigate('/')}>
           CooProductos
-        </h1>
+        </h1> */}
+
+        <img 
+          src="/logocop.png" /* Reemplaza 'logo.png' por el nombre y extensión exactos (ej. .svg, .png) */
+          alt="Logo CooProductos" 
+          className="h-10 sm:h-12 w-auto cursor-pointer object-contain" 
+          onClick={() => navigate('/')} 
+        />
         
         {/* Navegación de Escritorio */}
         <nav className="hidden md:flex items-center gap-6">
@@ -68,7 +75,7 @@ export default function Navbar() {
 
         {/* Botón de Hamburguesa para Móviles */}
         <button 
-          className="md:hidden text-white hover:text-accent focus:outline-none transition-colors"
+          className="md:hidden text-primary hover:text-accent focus:outline-none transition-colors"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Alternar menú"
         >
@@ -86,7 +93,7 @@ export default function Navbar() {
 
       {/* Menú Desplegable para Móviles */}
       <div 
-        className={`md:hidden bg-primary overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`md:hidden bg-white overflow-hidden transition-all duration-300 ease-in-out ${
           isOpen ? 'max-h-85 border-t border-secondary/30' : 'max-h-0'
         }`}
       >
@@ -106,7 +113,7 @@ export default function Navbar() {
           <Link 
             to="/auth" 
             onClick={() => setIsOpen(false)}
-            className="block mb-0.5 w-full text-center mt-4 py-3 bg-accent hover:bg-white hover:text-primary rounded-xl font-bold transition-colors shadow-md"
+            className="block mb-0.5 w-full text-center mt-4 py-3 bg-primary text-white hover:bg-accent hover:text-white rounded-xl font-bold transition-colors shadow-md"
           >
             Iniciar Sesión
           </Link>
