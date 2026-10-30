@@ -34,6 +34,7 @@ function VistaSolicitud() {
     const [vendedor, setVendedor] = useState([]);
     const [confirmar, setConfirmar] = useState(false);
     const [validador, setValidador] = useState(false);
+    const [zapsign, setZapsign] = useState(false);
     const [grabando, setGrabando] = useState(false);
     const [cliente, setCliente] = useState({
         id: 0,
@@ -555,7 +556,14 @@ function VistaSolicitud() {
          return;
       };       
       toast.success("Solicitud enviada al correo del cliente");
-      navigate('/');
+      navigate('/DashboardView');
+    };
+
+    //se dispara con el boton validar identidad, esto lanza una ventana nueva para entrar a la pagina zapsign
+    //y activa el boton de envio de solicitudes
+    const validaIdentidad = () => {
+       setZapsign(true);
+       window.open("https://app2.zapsign.com.br/access/sign-in", "_blank") 
     };
 
     return (
@@ -913,9 +921,17 @@ function VistaSolicitud() {
        {/*se oculta el boton cuando esta en proceso de grabacion */}
        {grabando == false &&
           <div className="w-full flex mt-2 md:mt-4 justify-center">
-              <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[16px] md:text-[20px] cursor-pointer hover:bg-green-800"
-              onClick={()=>paso1()}
+              <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[16px] md:text-[20px] cursor-pointer hover:bg-green-800 mr-5"
+                 onClick={()=>validaIdentidad()}     
+              >Validar Identidad</button>
+              {zapsign ?
+                <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[16px] md:text-[20px] cursor-pointer hover:bg-green-800"
+                  onClick={()=>paso1()}
+                >Enviar Solicitud</button>
+              : <button className="bg-gray-300 text-white text-center py-2 px-10 mb-10 rounded-lg text-[16px] md:text-[20px]"
+                  onClick={()=>toast.info("Presione primero el botón de validación de identidad")}
               >Enviar Solicitud</button>
+              }
           </div>
        }
        {/*Caja de confirmacion*/}

@@ -12,9 +12,13 @@ import GestionClientes from '../components/GestionClientes';
 
 
 export default function DashboardView() {
-  const { user: userLogin, logout } = useUserLogin()
+  const { user: userLogin, logout } = useUserLogin();
   const navigate = useNavigate();
-
+  const fecha = new Date();
+  const nombreMes = fecha.toLocaleDateString('es-CO', {
+    month: 'long'
+  });
+  const anual = fecha.getFullYear();
  
   // 1. Estado para saber qué pantalla mostrar en el centro
   const [activeView, setActiveView] = useState('resumen');
@@ -23,6 +27,8 @@ export default function DashboardView() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const [tercero, setTercero] = useState(null)
+
+  
 
   useEffect(()=>{
 
@@ -40,7 +46,7 @@ export default function DashboardView() {
       } catch (error) {
         console.log('ocurrio un error', error);
       } 
-
+      
     }
 
     datosTercero(userLogin.tercero_id)
@@ -204,9 +210,10 @@ export default function DashboardView() {
             {activeView === 'resumen' && (
               <div className="space-y-6">
                 <div className="bg-white p-6 rounded border border-gray-200">
-                  <h2 className="text-xl font-bold text-primary">
-                    Bienvenido, {user.name}
-                  </h2>
+                  <div className="flex justify-between">
+                     <h2 className="text-xl font-bold text-primary">Bienvenido, {user.name}</h2>
+                     <h2 className="text-xl font-bold text-primary">{nombreMes}-{anual}</h2>
+                  </div>   
                   <p className="text-sm text-gray-600 mt-1">
                     Este es el panel principal de tu cuenta cooperativa.
                   </p>

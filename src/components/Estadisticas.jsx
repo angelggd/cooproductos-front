@@ -1,10 +1,37 @@
+import { useState, useEffect } from "react";
 import { IoDocumentTextOutline, IoShieldCheckmarkOutline } from "react-icons/io5";
 import { ImCheckboxChecked } from "react-icons/im";
 import { HiUsers } from "react-icons/hi2";
 import { FaFileSignature } from "react-icons/fa";
 import { MdExitToApp } from "react-icons/md";
+import { infoSolicitudes } from '../services/srvSolicitudes';
+import GraficoBarras from "./GraficoBarras";
 
 function Estadisticas() {
+     const [solicitudes, setSolicitudes] = useState({activas:0, aprobadas:0, rechazadas:0});
+
+     //traemos la informacion de las solicitudes del mes activo
+     const infoMes = async() => {
+        const fecha = new Date();
+        const mes = fecha.getMonth()+1;
+        const anual = fecha.getFullYear();
+
+        const resul = await infoSolicitudes({anual, mes});
+        if(resul.status!==200) return;
+        const datos = resul.data;
+        const apro = datos.filter(ele=>ele.sol_estado==3);
+        const rech = datos.filter(ele2=>ele2.sol_estado==4);
+        const ndatos = datos.length;
+        const napro = apro.length;
+        const nrech = rech.length;
+        setSolicitudes({activas:ndatos, aprobadas:napro, rechazadas:nrech})
+     };
+
+     useEffect(() => {
+        infoMes();
+     }, []);
+
+
      return (
             <div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -12,8 +39,8 @@ function Estadisticas() {
                     <div className="flex">
                         <IoDocumentTextOutline size="32" className="w-[20%] h-auto bg-green-100 p1 rounded-lg border-2 border-green-200"/>
                         <div className="w-[80%] ml-3">
-                           <span className="text-xs text-gray-500 font-bold uppercase">Solicitudes Activas</span>
-                           <p className="text-2xl font-bold text-primary mt-1">5</p>
+                           <span className="text-xs text-gray-500 font-bold uppercase">Solicitudes del Mes</span>
+                           <p className="text-2xl font-bold text-primary mt-1">{solicitudes.activas}</p>
                         </div>
                     </div>             
                   </div>
@@ -22,8 +49,8 @@ function Estadisticas() {
                    <div className="flex">
                         <ImCheckboxChecked size="32" className="w-[20%] h-auto bg-green-100 p-3 rounded-lg border-2 border-green-200"/>
                         <div className="w-[80%] ml-3">
-                           <span className="text-xs text-gray-500 font-bold uppercase">Aprobaciones</span>
-                           <p className="text-2xl font-bold text-primary mt-1">12</p>
+                           <span className="text-xs text-gray-500 font-bold uppercase">Aprobaciones del Mes</span>
+                           <p className="text-2xl font-bold text-primary mt-1">{solicitudes.aprobadas}</p>
                         </div>
                     </div>   
                   </div>
@@ -32,8 +59,8 @@ function Estadisticas() {
                    <div className="flex">
                         <HiUsers size="32" className="w-[20%] h-auto bg-green-100 p-3 rounded-lg border-2 border-green-200"/>
                         <div className="w-[80%] ml-3">
-                           <span className="text-xs text-gray-500 font-bold uppercase">Asociados Nuevos</span>
-                           <p className="text-2xl font-bold text-primary mt-1">18</p>
+                           <span className="text-xs text-gray-500 font-bold uppercase">Rechazos del Mes</span>
+                           <p className="text-2xl font-bold text-primary mt-1">{solicitudes.rechazadas}</p>
                         </div>
                     </div>   
                   </div>
@@ -55,34 +82,7 @@ function Estadisticas() {
                     </button>
                   </div>
               </div>
-              <h1 className="text-xl mt-2">Accesos rápidos</h1>
-              <div className="grid grid-cols-2 gap-5 mt-2">
-                 <div className="bg-white text-green-900 flex p-4 rounded-lg">
-                    <div>
-                       <h1>Mis Solicitudes</h1>
-                       <h1 className="text-[10px]">Consulta y dá seguimiento a tus solicitudes</h1>
-                    </div>
-                 </div>
-                 <div className="bg-white text-green-900 flex p-4 rounded-lg">
-                   <div>
-                       <h1>Simulador de créditos</h1>
-                       <h1 className="text-[10px]">Calcula el valor de la cuota antes de iniciar la solicitud</h1>
-                    </div>
-                 </div>
-                 <div className="bg-white text-green-900 flex p-4 rounded-lg">
-                    <div>
-                       <h1>Gestión de clientes</h1>
-                       <h1 className="text-[10px]">Consulta y administra la información de clientes</h1>
-                    </div>
-                 </div>
-                 <div className="bg-white text-green-900 flex p-4 rounded-lg">
-                    <div>
-                       <h1>Gestión de usuarios</h1>
-                       <h1 className="text-[10px]">Administra los accesos del equipo</h1>
-                    </div>
-                 </div>
-
-              </div>
+ 
            </div>
    )
 };
