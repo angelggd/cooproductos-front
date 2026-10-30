@@ -119,3 +119,61 @@ export const getSeguimiento = async(id, token) => {
     }
 };
 
+//esta funcion guarda seguimiento nuevo de la solicitud 
+export const saveSeguimiento = async(datos, token) => {
+    console.log(datos)
+    try {
+        const response = await fetch(`${endpoints.solicitudes}/seguimiento`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+            body: JSON.stringify(datos)
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+//esta funcion actualiza seguimiento  de la solicitud 
+export const updateSeguimiento = async(datos, id, token) => {
+    try {
+        const response = await fetch(`${endpoints.solicitudes}/seguimiento/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+            body: JSON.stringify(datos)
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+
+//esta funcion devuelve la informacion de solicitudes de un mes dado 
+export const infoSolicitudes = async(query, token) => {
+    const {anual, mes} = query;
+    try {
+        const response = await fetch(`${endpoints.solicitudes}/info?anual=${anual}&mes=${mes}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};

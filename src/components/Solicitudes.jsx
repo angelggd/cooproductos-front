@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { getSolicitudes, countSolicitudes, getSolicitudById, getSeguimiento} from "../services/srvSolicitudes";
+import { getSolicitudes, countSolicitudes, getSolicitudById,
+         getSeguimiento, saveSeguimiento, updateSeguimiento } from "../services/srvSolicitudes";
 import { getClienteByTerceroId } from '../services/srvClientes';
 import { toast } from "react-toastify";
 import { FaEdit } from "react-icons/fa";
@@ -13,6 +14,7 @@ function Solicitudes() {
    const [pagina, setPagina] = useState(1);
    const [ventana, setVentana] = useState(false);
    const [ventanaSeg, setVentanaSeg] = useState(false);
+   const [selectedSeg, setSelectedSeg] = useState({id:0});
    const [iestado, setIestado] = useState(9);
    const [historico, setHistorico] = useState([]);
    const [paginacion, setPaginacion] = useState({totregistros: 0, totpaginas: 0});
@@ -114,6 +116,7 @@ function Solicitudes() {
       setHistorico(resul.data);
       setVentana(false);
       setVentanaSeg(true);
+      nuevoSeg();
    };
 
    const cierraSeg = () => {
@@ -121,6 +124,68 @@ function Solicitudes() {
       setVentana(true);
    };
 
+   //cuando se selecciona un seguimiento
+   const seleccionaSeg = (id) => {
+      const registro = historico.find(ele=>ele.id==id);
+      setSelectedSeg(registro);
+   };
+
+   //cambios en los seguimientos
+   const cambiosSeg = (e) => {
+      const propiedad = e.target.name;
+      const valor = e.target.value;
+      setSelectedSeg({...selectedSeg, [propiedad]:valor})
+   };
+
+   //guardar cambios en los seguimientos
+   const guardaSeg = async() => {
+      if(selectedSeg.seg_etapa==0) {
+         toast.warning("Debe seleccionar etapa");
+         return;
+      };
+      //buscamos si ya esta guardada la etapa seleccionada
+      if(selectedSeg.id==0) {
+         const existe = historico.find(ele=>ele.seg_etapa==selectedSeg.seg_etapa);
+         if(existe) {
+            toast.warning("Esta etapa ya existe en el seguimiento de esta solicitud");
+            return;
+         };
+      };
+      const id = selectedSeg.id;
+      const fecha = new Date();
+      const registro = {
+         solicitud_id: solicitud.id,
+         seg_etapa: selectedSeg.seg_etapa,
+         seg_observacion: selectedSeg.seg_observacion,
+         usuario_id: id==0 ? user.id  : selectedSeg.usuario_id,
+         seg_fecha: id==0 ? fecha : selectedSeg.seg_fecha,         
+      };
+      if(id==0) {
+         const resul = await saveSeguimiento(registro, user.token);
+         if(resul.status!==200) {
+            toast.error("Ocurrio un error al guardar nuevo seguimiento");
+            return;
+         };
+      } else {
+         const resul = await updateSeguimiento(registro, id);
+         if(resul.status!==200) {
+            toast.error("Ocurrio un error al actualizar seguimiento");
+            return;
+         };
+      };
+      toast.success("Seguimiento actualizado");
+      cargaSeguimientos();
+   };
+
+   //blanquea para un nuevo seguimiento
+   const nuevoSeg = () => {
+      setSelectedSeg({
+         id:0,
+         seg_observacion:"",
+         seg_etapa:0,
+         usuario_id:user.id,
+      })
+   };
 
    return (
       <div className="bg-white p-6 rounded border border-gray-200">
@@ -143,7 +208,7 @@ function Solicitudes() {
                 
           <div className="p-2 border border-dashed border-gray-300 rounded text-center text-sm text-gray-500">
               <table className="w-full text-left">
-                 <thead className="bg-black text-white">
+                 <thead className="bg-green-800 text-white">
                     <th>Cliente</th>
                     <th>Fecha</th>
                     <th>Modelo</th>
@@ -233,7 +298,7 @@ function Solicitudes() {
           {/* Ventana para actualizacion de datos */}
           <Dialog header="" 
                visible={ventanaSeg} 
-               className="w-[55%]  border-2 bg-gray-100 p-2 text-left text-[18px] rounded-lg text-black" 
+               className="w-full md:w-[60%]  border-2 bg-gray-100 p-2 text-left text-[18px] rounded-lg text-black" 
                onHide={() => { if (!ventanaSeg) return; setVentanaSeg(false)}}>
                <h3 className="w-full text-center">Seguimiento Solicitud</h3>
                <div className="grid grid-cols-1 md:grid-cols-3 gap-1 p-6 mt-2 text-[14px]">
@@ -256,17 +321,18 @@ function Solicitudes() {
                   </thead>
                   <tbody>
                      {historico.map(his=>
-                        <tr>
+                        <tr key={his.id}>
                            <td>{his.seg_etapa==1 ? "Solicitud" 
                               : his.seg_etapa==2 ? "Revision"
                               : his.seg_etapa==3 ? "Validación Identidad"
                               : his.seg_etapa==4 ? "Documentación"
-                              : his.seg_etapa==5 ? "Aprobación" : "Rechazo"}
+                              : his.seg_etapa==5 ? "Aprobación" 
+                              : his.seg_estapa==6 ? "Rechazo" : "**No definido**"}
                            </td>
                            <td>{his.seg_fecha}</td>
                            <td>{his.gnr_usuario.gnr_tercero.ter_razon.slice(0,40)}</td>
                            <td>{his.seg_observacion.slice(0,64)}</td>
-                           <td><FaEdit size="18"/></td>
+                           <td><FaEdit size="18" onClick={()=>seleccionaSeg(his.id)}/></td>
                         </tr>
                      )}
                   </tbody>
@@ -274,8 +340,12 @@ function Solicitudes() {
                </div>
                <div className="grid grid-cols-3 gap-1 mt-4 text-[14px]">
                    <h1 className="bg-blue-300 rounded-lg text-center">Etapa</h1>
-                   <select name="etapa" className="col-span-2 border-2 px-2">
+                   <select name="seg_etapa"
+                           className="col-span-2 border-2 px-2" 
+                           value={selectedSeg.seg_etapa} 
+                           onChange={(e)=>cambiosSeg(e)}>
                      <option value="0">Seleccione Etapa</option>
+                     <option value="1">Solicitud</option>
                      <option value="2">Revisión</option>
                      <option value="3">Validación Identidad</option>
                      <option value="4">Revision documentacion</option>
@@ -284,12 +354,14 @@ function Solicitudes() {
                      <option value="7">Anulación</option>
                    </select>
                    <h1 className="bg-blue-300 rounded-lg text-center">Observaciones</h1>
-                   <textarea name="observa" className="col-span-2 border-2 rounded-lg px-2" rows={3}>
-                   
-                   </textarea>
-                   <h1>&nbsp;</h1>
-                   <button className="bg-green-400 text-white text-center rounded-lg p-2">Guardar Item</button>
-                   <button className="bg-gray-400 text-white text-center rounded-lg p-2 " onClick={()=>cierraSeg()}>Cerrar</button>
+                   <textarea name="seg_observacion" 
+                             className="col-span-2 border-2 rounded-lg px-2" 
+                             onChange={(e)=>cambiosSeg(e)}
+                             value={selectedSeg.seg_observacion}
+                             rows={3}/>
+                   <button className="bg-blue-400 text-white text-center rounded-lg p-2 hover:bg-blue-600" onClick={()=>nuevoSeg()}>Nuevo Registro</button>
+                   <button className="bg-green-400 text-white text-center rounded-lg p-2 hover:bg-green-600" onClick={()=>guardaSeg()}>Guardar Item</button>
+                   <button className="bg-gray-400 text-white text-center rounded-lg p-2 hover:bg-gray-600" onClick={()=>cierraSeg()}>Cerrar</button>
                </div>
           </Dialog>
       </div>    
