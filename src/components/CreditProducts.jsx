@@ -62,6 +62,7 @@ export default function CreditProducts() {
     { title: 'Secretaría de Educación Municipal de Sincelejo', location: 'Sucre', active: true },
     { title: 'Secretaría de Educación Municipal de Valledupar', location: 'Cesar', active: true },
     { title: 'Secretaría de Educación del Magdalena', location: 'Magdalena', active: true },
+    { title: 'Secretaría de Educación de Monteria', location: 'Monteria', active: true },
   ];
 
   // Segmento docente atendido
@@ -95,18 +96,18 @@ export default function CreditProducts() {
         </div>
 
         {/* Banner de Condiciones Clave (Destacados de la Libranza) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col items-center text-center">
             <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Monto Máximo</span>
             <span className="text-xl sm:text-2xl font-extrabold text-primary mt-1">Hasta $10M</span>
             <span className="text-[11px] text-gray-500 mt-0.5">Te prestamos hasta $10.000.000</span>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col items-center text-center">
+{/*           <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col items-center text-center">
             <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Tasa de Interés</span>
             <span className="text-xl sm:text-2xl font-extrabold text-accent mt-1">2.1% M.V.</span>
             <span className="text-[11px] text-gray-500 mt-0.5">Tasa preferencial fija</span>
-          </div>
+          </div> */}
 
           <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col items-center text-center">
             <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Plazo Flexible</span>
@@ -200,10 +201,10 @@ export default function CreditProducts() {
                         <span className="text-gray-400 font-semibold uppercase">Plazo</span>
                         <span className="font-bold text-primary">{prod.term}</span>
                       </div>
-                      <div className="flex justify-between items-center text-xs">
+             {/*          <div className="flex justify-between items-center text-xs">
                         <span className="text-gray-400 font-semibold uppercase">Tasa</span>
                         <span className="font-bold text-accent">{prod.rate}</span>
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* Ventajas */}

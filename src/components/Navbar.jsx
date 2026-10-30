@@ -31,11 +31,11 @@ export default function Navbar() {
   };
 
   return (
-    <header className="bg-primary text-white sticky top-0 z-50 shadow-md">
+    <header className="bg-nav text-primary sticky top-0 z-50 shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         
         {/* Logo */}
-        <h1 className="text-2xl font-bold tracking-wider cursor-pointer" onClick={()=>navigate('/')}>
+        <h1 className="text-2xl text-primary font-bold tracking-wider cursor-pointer" onClick={()=>navigate('/')}>
           CooProductos
         </h1>
         
@@ -45,7 +45,7 @@ export default function Navbar() {
             <a 
               key={link.name} 
               href={link.href} 
-              className="hover:text-accent transition-colors font-medium"
+              className="hover:text-accent transition-colors font-medium font-semibold"
             >
               {link.name}
             </a>
@@ -55,7 +55,7 @@ export default function Navbar() {
           {user.id==0 
              ? <Link 
                   to="/auth" 
-                  className="bg-accent hover:bg-white hover:text-primary transition-all duration-300 py-2 px-6 rounded-full font-bold shadow-md transform hover:-translate-y-0.5 ml-2"
+                  className="bg-primary text-white hover:bg-accent transition-all duration-300 py-2 px-6 rounded-full font-bold shadow-md transform hover:-translate-y-0.5 ml-2"
                >
                Iniciar Sesión
                </Link>
