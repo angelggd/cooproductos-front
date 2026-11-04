@@ -98,30 +98,30 @@ function Estadisticas() {
                   </div>
               </div>
               {/*Estadistica anual */}
-              <div className="mt-4 w-full flex flex-wrap p-4 bg-white shadow-lg shadow-gray-500/50 rounded-md">
-                <div className="flex-1 min-w-0">
+              <div className="mt-4 w-full md:flex md:flex-wrap p-4 bg-white shadow-lg shadow-gray-500/50 rounded-md">
+                <div className="w-full md:flex-1 md:min-w-0">
                    <GraficoBarras valores={resumen.activas} etiqueta="Solicitudes" bgColor={3}/>
                 </div>
-                <div className="flex-1 min-w-0 ml-2">
+                <div className="w-full md:flex-1 md:min-w-0 ml-2">
                    <GraficoBarras valores={resumen.aprobadas} etiqueta="Aprobadas" bgColor={4}/>
                 </div>   
-                <div className="flex-1 min-w-0 ml-2">
+                <div className="w-full md:flex-1 md:min-w-0 ml-2">
                    <GraficoBarras valores={resumen.rechazadas} etiqueta="Rechazadas" bgColor={2}/>
                 </div>   
               </div>
 
-              <div className="bg-green-50 w-full rounded-lg flex border-2 border-green-200 mt-4 p-4">
+              <div className="bg-green-50 w-full rounded-lg flex border-2 border-green-200 mt-4 p-2 md:p-4">
                   <div className="w-[15%] flex bg-green-100 p-2 rounded-lg">
                      <IoShieldCheckmarkOutline size="32"/>
                      <FaFileSignature size="32" className="ml-2"/>
                   </div>
-                  <div className="w-[60%] ml-10">
-                     <h1 className="text-2xl">Validación y Firma Digital</h1>
-                     <h1 className="text-[10px]">Validación de identidad, consulta de antecedentes y firma de documentos</h1>
+                  <div className="w-[60%] ml-4 md:ml-10">
+                     <h1 className="text-center text-[20px] md:text-2xl">Validación y Firma Digital</h1>
+                     <h1 className="text-[8px] md:text-[10px]">Validación de identidad, consulta de antecedentes y firma de documentos</h1>
                   </div>
                   <div className="w-[25%]">
-                    <button className="bg-green-800 text-white rounded-lg py-2 px-4 flex cursor-pointer" onClick={()=>irAZapSign()}>
-                      <h1 className="text-[14px] mt-1">Ir a ZapSign</h1>
+                    <button className="bg-green-800 text-white rounded-lg md:py-2 px-1 md:px-4 flex cursor-pointer" onClick={()=>irAZapSign()}>
+                      <h1 className="text-[10px] md:text-[14px] mt-1">Ir a ZapSign</h1>
                       <MdExitToApp size="32" className="ml-3"/>
                     </button>
                   </div>

@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-primary text-white pt-16 pb-8 border-t-4 border-accent">
+    <footer className="bg-primary text-white pt-4 md:pt-16 pb-4 md:pb-8 border-t-4 border-accent">
       <div className="container mx-auto px-4 max-w-6xl">
         
         {/* Cuadrícula principal del footer */}
@@ -8,16 +8,16 @@ export default function Footer() {
           
           {/* Columna 1: Marca y descripción */}
           <div>
-            <h2 className="text-2xl font-bold tracking-wider mb-4">CooProductos</h2>
-            <p className="text-gray-300 text-sm leading-relaxed mb-6">
+            <h2 className="text-xl md:text-2xl font-bold tracking-wider mb-2 md:mb-4">CooProductos</h2>
+            <p className="text-gray-300 text-[12px] md:text-sm leading-relaxed mb-2 md:mb-6">
               Tu cooperativa de confianza. Impulsando el desarrollo económico y bienestar de nuestros asociados con soluciones financieras transparentes y sólidas.
             </p>
           </div>
 
           {/* Columna 2: Enlaces de navegación */}
           <div>
-            <h3 className="text-lg font-bold text-accent mb-4">Servicios</h3>
-            <ul className="space-y-3 text-sm text-gray-300">
+            <h3 className="text-lg font-bold text-accent mb-2 md:mb-4">Servicios</h3>
+            <ul className="space-y-1 md:space-y-3 text-sm text-gray-300">
               <li><a href="#nosotros" className="hover:text-white hover:pl-2 transition-all duration-300 block">Quiénes Somos</a></li>
               <li><a href="#productos" className="hover:text-white hover:pl-2 transition-all duration-300 block">Líneas de Crédito</a></li>
               <li><a href="#simulador" className="hover:text-white hover:pl-2 transition-all duration-300 block">Simulador de Cuotas</a></li>
@@ -27,8 +27,8 @@ export default function Footer() {
 
           {/* Columna 3: Información de Contacto */}
           <div>
-            <h3 className="text-lg font-bold text-accent mb-4">Contacto</h3>
-            <ul className="space-y-4 text-sm text-gray-300">
+            <h3 className="text-lg font-bold text-accent mb-2 md:mb-4">Contacto</h3>
+            <ul className="space-y-1 md:space-y-4 text-sm text-gray-300">
               <li className="flex items-start">
                 <svg className="w-5 h-5 mr-3 text-secondary mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

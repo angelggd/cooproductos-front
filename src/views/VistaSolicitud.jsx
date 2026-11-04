@@ -944,8 +944,8 @@ function VistaSolicitud() {
        </div>
        {/*se oculta el boton cuando esta en proceso de grabacion */}
        {grabando == false &&
-          <div className="w-full flex mt-2 md:mt-4 justify-center">
-              <div className="flex items-center gap-3 mb-10 mr-4">
+          <div className="w-full flex mt-2 md:mt-4 justify-center px-4 text-[12px]">
+              <div className="flex items-center gap-1 md:gap-3 mb-4 md:mb-10 mr-2 md:mr-4">
                  <label htmlFor="archivo" className="cursor-pointer bg-green-100 px-4 py-2 rounded-lg border-2 border-green-500" >
                     Cargar Volante de Pago
                  </label>
@@ -959,14 +959,14 @@ function VistaSolicitud() {
                     {nombreFile || ""}
                  </span>
               </div>
-              <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[16px] md:text-[20px] cursor-pointer hover:bg-green-800 mr-5"
+              <button className="bg-green-600 text-white text-center py-2 px-4 md:px-10 mb-4 md:mb-10 rounded-lg text-[12px] md:text-[20px] cursor-pointer hover:bg-green-800 mr-2 md:mr-5"
                  onClick={()=>validaIdentidad()}     
               >Validar Identidad</button>
               {zapsign ?
-                <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[16px] md:text-[20px] cursor-pointer hover:bg-green-800"
+                <button className="bg-green-600 text-white text-center py-2 px-4 md:px-10 mb-4 md:mb-10 rounded-lg text-[12px] md:text-[20px] cursor-pointer hover:bg-green-800"
                   onClick={()=>paso1()}
                 >Enviar Solicitud</button>
-              : <button className="bg-gray-300 text-white text-center py-2 px-10 mb-10 rounded-lg text-[16px] md:text-[20px]"
+              : <button className="bg-gray-300 text-white text-center py-2 px-4 md:px-10 mb-4 md:mb-10 rounded-lg text-[12px] md:text-[20px]"
                   onClick={()=>toast.info("Presione primero el botón de validación de identidad")}
               >Enviar Solicitud</button>
               }

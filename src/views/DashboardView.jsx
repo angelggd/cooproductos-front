@@ -13,6 +13,8 @@ import GestionClientes from '../components/GestionClientes';
 
 export default function DashboardView() {
   const { user: userLogin, logout } = useUserLogin();
+  const xuser = JSON.parse(localStorage.getItem("user"));
+  const [menuOptions, setMenuOptions] = useState([]);
   const navigate = useNavigate();
   const fecha = new Date();
   const nombreMes = fecha.toLocaleDateString('es-CO', {
@@ -28,10 +30,27 @@ export default function DashboardView() {
 
   const [tercero, setTercero] = useState(null)
 
-  
+  // Lista simple de opciones del menú (fácil de leer y ampliar)
+  const menuOp = [
+    { id: 'resumen', label: 'Panel General', roll:5 },
+    { id: 'solicitudes', label: 'Mis Solicitudes', roll:4 },
+    { id: 'simulador', label: 'Simulador de Crédito',roll:5 },
+    { id: 'usuarios', label: 'Gestión de Usuarios', roll:2 },
+    { id: 'asesores', label: 'Gestión de Asesores', roll:2 },
+    { id: 'vendedores', label: 'Gestión de Vendedores', roll:2 },
+    { id: 'clientes', label: 'Gestión de Clientes', roll:4},
+  ];
+
+  const cargarMenu = () => {
+     const filtro = menuOp.filter(ele=>ele.roll>=xuser.roll_id);
+     setMenuOptions(filtro);
+  };
 
   useEffect(()=>{
+    cargarMenu();
+  },[])
 
+  useEffect(()=>{
     const datosTercero = async () => {
 
       // 1. Validar que exista el id antes de consultar
@@ -67,16 +86,9 @@ export default function DashboardView() {
     email: tercero.data.ter_email,
   };
 
-  // Lista simple de opciones del menú (fácil de leer y ampliar)
-  const menuOptions = [
-    { id: 'resumen', label: 'Panel General' },
-    { id: 'solicitudes', label: 'Mis Solicitudes' },
-    { id: 'simulador', label: 'Simulador de Crédito' },
-    { id: 'usuarios', label: 'Gestión de Usuarios' },
-    { id: 'asesores', label: 'Gestión de Asesores' },
-    { id: 'vendedores', label: 'Gestión de Vendedores' },
-    { id: 'clientes', label: 'Gestión de Clientes'},
-  ];
+
+
+ 
 
   // Función auxiliar para cambiar de vista y cerrar el menú en móvil
   const handleMenuClick = (viewId) => {

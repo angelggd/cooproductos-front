@@ -194,13 +194,13 @@ function Solicitudes() {
    };
 
    return (
-      <div className="bg-white p-6 rounded border border-gray-200">
+      <div className="bg-white p-1 md:p-6 rounded border border-gray-200">
           <h3 className="text-lg font-bold text-primary mb-2">Mis Solicitudes</h3>
           <div className="flex mb-4">
-             <p className="w-[70%] text-sm text-gray-600 ">Listado general de radicaciones y créditos.</p>
-             <div className="grid grid-cols-2 gap-1 w-[30%] text-[14px]">
-                <h1 className="bg-gray-300 rounded-lg text-center">Estado</h1>
-                <select name="estado" className="border-2 px-2 rounded-lg" onChange={(e)=>cambiaEstado(e)} value={iestado}>
+             <p className="w-[55%] md:w-[70%] text-[10px] md:text-sm text-gray-600 ">Listado general de radicaciones y créditos.</p>
+             <div className="grid-cols-3 grid md:grid-cols-2 gap-1 w-[45%] md:w-[30%] text-[10px] md:text-[14px]">
+                <h1 className="bg-gray-300 rounded-md md:rounded-lg text-center">Estado</h1>
+                <select name="estado" className="col-span-2 md:col-span-1 border-2 md:px-2 rounded-md md:rounded-lg" onChange={(e)=>cambiaEstado(e)} value={iestado}>
                    <option value="9">**TODAS**</option>
                    <option value="0">Pendientes</option>
                    <option value="1">En revisión</option>
@@ -212,16 +212,16 @@ function Solicitudes() {
              </div>
           </div>
                 
-          <div className="p-2 border border-dashed border-gray-300 rounded text-center text-sm text-gray-500">
+          <div className="p-1 md:p-2 border border-dashed border-gray-300 rounded text-center text-[7px] md:text-sm text-gray-500">
               <table className="w-full text-left">
                  <thead className="bg-green-800 text-white">
                     <th>Cliente</th>
                     <th>Fecha</th>
-                    <th>Modelo</th>
+                    <th className="hidden md:table-cell">Modelo</th>
                     <th>Solicitado</th>
                     <th>Valor Cuota</th>
                     <th>#Cuotas</th>
-                    <th>Autorizado</th>
+                    <th className="hidden md:table-cell">Autorizado</th>
                     <th>Estado</th>
                     <th>Edit</th>
                  </thead>
@@ -230,11 +230,11 @@ function Solicitudes() {
                        <tr key={ele.id}>
                           <td>{ele.cre_cliente.cli_razonsocial}</td>
                           <td>{ele.sol_fechasolicitud}</td>
-                          <td>{ele.cre_modelocredito.mod_nombre}</td>
+                          <td className="hidden md:table-cell">{ele.cre_modelocredito.mod_nombre}</td>
                           <td>{ele.sol_valorsolicitado}</td>
                           <td>{ele.sol_valorcuota}</td>
                           <td>{ele.sol_numcuotas}</td>
-                          <td>{ele.sol_valoraprobado}</td>
+                          <td className="hidden md:table-cell">{ele.sol_valoraprobado}</td>
                           <td>{ele.sol_estado==0 ?"PENDIENTE" 
                               : ele.sol_estado==1 ? "EN REVISION"  
                               : ele.sol_estado==2 ? "EN VALIDACION"
@@ -258,12 +258,12 @@ function Solicitudes() {
           {/* Ventana para actualizacion de datos */}
           <Dialog header="" 
                visible={ventana} 
-               className="w-[50%]  border-2 bg-gray-100 p-2 text-left text-[18px] rounded-lg text-black" 
+               className="w-full md:w-[50%]  border-2 bg-gray-100 p-2 text-left text-[18px] rounded-lg text-black" 
                onHide={() => { if (!ventana) return; setVentana(false)}}>
                <h3 className="w-full text-center">Actualizacion Registro</h3>
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-1 p-6 mt-2 text-[14px]">
-                  <h1 className="bg-blue-200 rounded-lg text-center">Número</h1>
-                  <h1 className="border-2 rounded-lg text-center col-span-1 px-2 w-[30%]">{solicitud.id}</h1>
+               <div className="grid grid-cols-3 gap-1 p-2 md:p-6 mt-2 text-[10px] md:text-[14px]">
+                  <h1 className="col-span-1 bg-blue-200 rounded-lg text-center">Número</h1>
+                  <h1 className="border-2 rounded-lg text-center col-span-1 px-2 w-[60%] md:w-[30%]">{solicitud.id}</h1>
                   <h1>&nbsp;</h1>
 
                   <h1 className="bg-blue-200 rounded-lg text-center">Cliente</h1>
@@ -277,17 +277,17 @@ function Solicitudes() {
                   <h1 className="bg-blue-200 rounded-lg text-center">Gestor Comercial</h1>
                   <h1 className="border-2 rounded-lg col-span-2 px-2">{solicitud.cre_vendedor.gnr_tercero.ter_razon}</h1>
                   <h1 className="bg-blue-200 rounded-lg text-center">Fecha de Solicitud</h1>
-                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[20%]">{solicitud.sol_fechasolicitud}</h1>
+                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[40%] md:w-[20%]">{solicitud.sol_fechasolicitud}</h1>
                   <h1 className="bg-blue-200 rounded-lg text-center">Monto Solicitado</h1>
-                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[30%]">${solicitud.sol_valorsolicitado.toLocaleString('es-CO')}</h1>
+                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[60%] md:w-[30%]">${solicitud.sol_valorsolicitado.toLocaleString('es-CO')}</h1>
                   <h1 className="bg-blue-200 rounded-lg text-center">Valor Cuota</h1>
-                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[30%]">${solicitud.sol_valorcuota.toLocaleString('es-CO')}</h1>
+                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[60%] md:w-[30%]">${solicitud.sol_valorcuota.toLocaleString('es-CO')}</h1>
                   <h1 className="bg-blue-200 rounded-lg text-center">Numero de Cuotas</h1>
-                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[10%]">{solicitud.sol_numcuotas}</h1>
+                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[30%] md:w-[10%]">{solicitud.sol_numcuotas}</h1>
                   <h1 className="bg-blue-200 rounded-lg text-center">Total Crédito</h1>
-                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[30%]">${solicitud.sol_totcredito.toLocaleString('es-CO')}</h1>
+                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[60%] md:w-[30%]">${solicitud.sol_totcredito.toLocaleString('es-CO')}</h1>
                   <h1 className="bg-blue-200 rounded-lg text-center">Valor Inversión</h1>
-                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[30%]">${solicitud.sol_inversion.toLocaleString('es-CO')}</h1>
+                  <h1 className="border-2 rounded-lg col-span-2 px-2 w-[60%] md:w-[30%]">${solicitud.sol_inversion.toLocaleString('es-CO')}</h1>
                   <h1 className="bg-blue-200 rounded-lg text-center">Estado Solicitud</h1>
                   <h1 className="border-2 rounded-lg px-2 bg-yellow-200 font-bold">
                               { solicitud.sol_estado==0 ? "PENDIENTE" 
@@ -308,15 +308,15 @@ function Solicitudes() {
                className="w-full md:w-[60%]  border-2 bg-gray-100 p-2 text-left text-[18px] rounded-lg text-black" 
                onHide={() => { if (!ventanaSeg) return; setVentanaSeg(false)}}>
                <h3 className="w-full text-center">Seguimiento Solicitud</h3>
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-1 p-6 mt-2 text-[14px]">
+               <div className="grid grid-cols-3 gap-1 p-1 md:p-6 md:mt-2 text-[12px] md:text-[14px]">
                   <h1 className="bg-blue-200 rounded-lg text-center">Número</h1>
                   <h1 className="border-2 rounded-lg text-center col-span-1 px-2 w-[30%]">{solicitud.id}</h1>
                   <h1>&nbsp;</h1>
                   <h1 className="bg-blue-200 rounded-lg text-center">Cliente</h1>
                   <h1 className="border-2 rounded-lg col-span-2 px-2">{solicitud.cre_cliente.gnr_tercero.ter_razon}</h1>
                </div> 
-               <div className="p-6 mt-2 border-2 border-accent">  
-               <table className="w-full text-left text-[12px]">
+               <div className="p-1 md:p-6 mt-2 border-2 border-accent">  
+               <table className="w-full text-left text-[8px] md:text-[12px]">
                   <thead>
                      <tr className="bg-gray-300">
                         <th>Etapa</th>
@@ -345,7 +345,7 @@ function Solicitudes() {
                   </tbody>
                </table>
                </div>
-               <div className="grid grid-cols-3 gap-1 mt-4 text-[14px]">
+               <div className="grid grid-cols-3 gap-1 mt-4 text-[12px] md:text-[14px]">
                    <h1 className="bg-blue-300 rounded-lg text-center">Etapa</h1>
                    <select name="seg_etapa"
                            className="col-span-2 border-2 px-2" 

@@ -154,17 +154,17 @@ export default function CreditSimulator() {
   };
 
   return (
-    <section id="simulador" className="py-16 bg-background">
+    <section id="simulador" className="md:py-16 bg-background">
       <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-        <h3 className="text-3xl font-bold text-primary text-center mb-6">Simula tu Crédito</h3>
+        <h3 className="text-xl md:text-3xl font-bold text-primary text-center mb-2 md:mb-6">Simula tu Crédito</h3>
         
         <form onSubmit={calcularCredito} className="space-y-5">
-          <div className="grid grid-cols-3 gap-2 bg-accent text-white mb-2 rounded-lg p-2">
+          <div className="grid grid-cols-3 gap-2 bg-accent text-white mb-2 rounded-lg p-2 text-[12px]">
              <h1 className="col-span-1 w-full text-center">Modelo</h1>
              <select name="modelo" 
                      value={modelo.id}
                      onChange={(e)=>cambios(e)}
-                     className="col-span-2 text-center boder-2 bg-accent w-full">
+                     className="col-span-2 text-center border-2 bg-accent w-full border-white rounded-lg">
                 <option value="0">Seleccione Modelo</option>
                 {modelos.map(mod=>
                    <option key={mod.id} value={mod.id}>{mod.mod_nombre}</option>
@@ -172,7 +172,7 @@ export default function CreditSimulator() {
              </select>
           </div>
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">Monto Solicitado ($)</label>
+            <label className="block text-gray-700 font-semibold md:mb-2">Monto Solicitado ($)</label>
             <input 
               type="number" 
               value={monto}
@@ -185,7 +185,7 @@ export default function CreditSimulator() {
             />
           </div>  
           <div>
-            <label className="block text-gray-700 font-semibold mb-2">Plazo (Meses)</label>
+            <label className="block text-gray-700 font-semibold md:mb-2">Plazo (Meses)</label>
             <input 
               type="range" 
               min="2"
@@ -196,19 +196,19 @@ export default function CreditSimulator() {
               onChange={(e) => cambios(e)}
               className="w-full accent-accent"
             />
-            <div className="text-center text-primary font-bold mt-2">{meses} meses</div>
-            <div className="text-center text-primary font-bold mt-2">Tasa : {tasa.toFixed(4)}%</div>
+            <div className="text-center text-primary font-bold md:mt-2">{meses} meses</div>
+            <div className="text-center text-primary font-bold md:mt-2">Tasa : {tasa.toFixed(4)}%</div>
           </div>
 
           <button 
             type="submit" 
-            className="w-full bg-accent hover:bg-secondary text-white font-bold py-3 rounded-lg transition-colors duration-300 shadow-md">
+            className="w-full bg-accent hover:bg-secondary text-white font-bold py-1 md:py-3 rounded-lg transition-colors duration-300 shadow-md">
             Calcular Cuota
           </button>
         </form>
 
         {cuota>0 && (
-          <div className="mt-8 p-6 bg-primary text-white rounded-xl text-center shadow-inner transition-opacity duration-500">
+          <div className="mt-4 md:mt-8 p-3 md:p-6 bg-primary text-white rounded-xl text-center shadow-inner transition-opacity duration-500">
             <p className="text-lg opacity-90">Valor Cuota Calculada:</p>
             <p className="text-4xl font-bold text-accent mt-2">
               ${cuota.toLocaleString('es-CO', { maximumFractionDigits: 0 })}
@@ -219,7 +219,7 @@ export default function CreditSimulator() {
           </div>
         )}
 
-        <p className="mb-3 text-[12px] text-center">Los valores mostrados son aproximados y no constituyen una oferta vinculante. La tasa, cuota y condiciones finales pueden variar según el análisis crediticio y las tasas vigentes al momento de la aprobación.</p>
+        <p className="mb-3 text-[10px] md:text-[12px] text-center">Los valores mostrados son aproximados y no constituyen una oferta vinculante. La tasa, cuota y condiciones finales pueden variar según el análisis crediticio y las tasas vigentes al momento de la aprobación.</p>
       </div>
     </section>
   );
