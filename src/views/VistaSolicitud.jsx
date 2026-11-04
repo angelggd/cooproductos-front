@@ -12,12 +12,15 @@ import { saveTercero } from '../services/srvTerceros';
 import { saveCliente, getClienteByTerceroId } from '../services/srvClientes';
 import { saveUser, getUserById } from '../services/srvUsers';
 import { saveSolicitud, devuelveFechaFormateada } from '../services/srvSolicitudes';
-import { generarSolicitud } from '../services/srvReportes'
+import { generarSolicitud } from '../services/srvReportes';
+import { endpoints } from '../config/endpoints';
 
 function VistaSolicitud() {
     let solicitud = JSON.parse(localStorage.getItem("solicitud"));
     const user = JSON.parse(localStorage.getItem("user"));
     const navigate = useNavigate();
+    const [file, setFile] = useState(null);
+    const [nombreFile, setNombreFile] = useState("");
     const [paises, setPaises] = useState([]);
     const [dptos, setDptos] = useState([]);
     const [dptosres, setDptosRes] = useState([]);
@@ -341,6 +344,7 @@ function VistaSolicitud() {
         if(cliente.tipodoc_id==0) return {error:true, msg:"Debe seleccionar tipo de documento"};
         if(cliente.ciudad_id==0) return {error:true, msg:"Debe seleccionar ciudad de nacimiento"};
         if(cliente.ciures_id==0) return {error:true, msg:"Debe seleccionar ciudad de residencia"};
+        if(cliente.ciulab_id==0) return {error:true, msg:"Debe seleccionar ciudad laboral"};
         if(cliente.ter_direccion.length==0) return {error:true, msg:"Debe digitar direccion de residencia"};
         if(cliente.ter_telefono.length==0 && cliente.ter_celular.length==0) return {error:true, msg:"Debe digitar teléfono o celular"};
         if(cliente.vivienda_id==0) return {error:true, msg:"Debe seleccionar tipo de vivienda"};
@@ -349,6 +353,7 @@ function VistaSolicitud() {
         if(cliente.fechanac === "" ) return {error:true, msg:"Fecha de nacimiento no valida"};
         if(cliente.fechaing === "" ) return {error:true, msg:"Fecha de ingreso no valida"};
         if(cliente.vendedor_id == 0 ) return {error:true, msg:"Debe seleccionar un vendedor"};
+        if(!file) return {error:true, msg:"No ha cargado volante de pago"};
         return {error:false, msg:""}
     };
 
@@ -477,7 +482,20 @@ function VistaSolicitud() {
           toast.success("Cliente actualizado");
           idcliente = nuevocliente.id;
        };  //fin grabacion del cliente
-       toast.info(idcliente)
+
+       //guardamos la imagen del volante de pago guardado
+       const formData = new FormData();
+       formData.append("image", file);
+       const res = await fetch(endpoints.upload, {
+            method: "POST",
+            body: formData
+       });
+       const data7 = await res.json();
+       if(data7.errorCode!==0) {
+          toast.error("Ocurrio un error al guardar la imagen");
+          return;
+       };
+       const imagenURL = data7.imageUrl;
        //por ultimo procedemos a guardar la solicitud de credito
        const hoy = new Date();
        const fechaC = devuelveFechaFormateada(hoy);
@@ -501,6 +519,7 @@ function VistaSolicitud() {
           sol_telempresa: cliente.telempresa,
           pagaduria_id: cliente.empresa_id,
           sol_token: firmadigital,
+          sol_volantepago:imagenURL,
        };
        const resul4 = await saveSolicitud(nsolicitud);
        if(resul4.status!==200) {
@@ -541,7 +560,7 @@ function VistaSolicitud() {
       //enviamos la solicitud al correo del cliente
       const sdatos = {
          ter_razon: cliente.ter_razon,
-         email: cliente.ter_email,
+         email: cliente.ter_email,  //se enviara al email de los comerciales
          ter_documento: cliente.ter_documento,
          capital: solicitud.monto,
          cuotas: solicitud.meses,
@@ -556,7 +575,7 @@ function VistaSolicitud() {
          return;
       };       
       toast.success("Solicitud enviada al correo del cliente");
-      navigate('/DashboardView');
+      navigate('/');
     };
 
     //se dispara con el boton validar identidad, esto lanza una ventana nueva para entrar a la pagina zapsign
@@ -564,6 +583,11 @@ function VistaSolicitud() {
     const validaIdentidad = () => {
        setZapsign(true);
        window.open("https://app2.zapsign.com.br/access/sign-in", "_blank") 
+    };
+
+    const cargarVolante = (e) => {
+        setNombreFile(e.target.files[0]?.name || "");
+        setFile(e.target.files[0]);
     };
 
     return (
@@ -921,6 +945,20 @@ function VistaSolicitud() {
        {/*se oculta el boton cuando esta en proceso de grabacion */}
        {grabando == false &&
           <div className="w-full flex mt-2 md:mt-4 justify-center">
+              <div className="flex items-center gap-3 mb-10 mr-4">
+                 <label htmlFor="archivo" className="cursor-pointer bg-green-100 px-4 py-2 rounded-lg border-2 border-green-500" >
+                    Cargar Volante de Pago
+                 </label>
+                 <input type="file"
+                        id="archivo"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e)=>cargarVolante(e)}
+                 />
+                 <span className="text-sm text-gray-600">
+                    {nombreFile || ""}
+                 </span>
+              </div>
               <button className="bg-green-600 text-white text-center py-2 px-10 mb-10 rounded-lg text-[16px] md:text-[20px] cursor-pointer hover:bg-green-800 mr-5"
                  onClick={()=>validaIdentidad()}     
               >Validar Identidad</button>

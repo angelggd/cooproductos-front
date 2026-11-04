@@ -101,7 +101,7 @@ function Solicitudes() {
    const ultimaPagina = async() => {
      const n = Number(paginacion.totpaginas);
      setPagina(n)
-      const query = {lim: 20, npag: n, estado:iestado, usuario_id:user.id, roll_id:user.roll_id, tercero_id:user.tercero_id, vendedor_id:0, cliente_id:0};
+     const query = {lim: 20, npag: n, estado:iestado, usuario_id:user.id, roll_id:user.roll_id, tercero_id:user.tercero_id, vendedor_id:0, cliente_id:0};
      await cargarSolicitudes(query)
    };
 
@@ -166,15 +166,21 @@ function Solicitudes() {
             toast.error("Ocurrio un error al guardar nuevo seguimiento");
             return;
          };
+         const datos = resul.data;
+         setSolicitud({...solicitud, sol_estado:datos.estado});
       } else {
          const resul = await updateSeguimiento(registro, id);
          if(resul.status!==200) {
             toast.error("Ocurrio un error al actualizar seguimiento");
             return;
          };
+         const datos = resul.data;
+         setSolicitud({...solicitud, sol_estado:datos.estado});
       };
       toast.success("Seguimiento actualizado");
       cargaSeguimientos();
+      const query = {lim: 20, npag: pagina, estado:iestado, usuario_id:user.id, roll_id:user.roll_id, tercero_id:user.tercero_id, vendedor_id:0, cliente_id:0};
+      cargarSolicitudes(query);
    };
 
    //blanquea para un nuevo seguimiento
@@ -283,7 +289,8 @@ function Solicitudes() {
                   <h1 className="bg-blue-200 rounded-lg text-center">Valor Inversión</h1>
                   <h1 className="border-2 rounded-lg col-span-2 px-2 w-[30%]">${solicitud.sol_inversion.toLocaleString('es-CO')}</h1>
                   <h1 className="bg-blue-200 rounded-lg text-center">Estado Solicitud</h1>
-                  <h1 className="border-2 rounded-lg px-2 bg-yellow-200 font-bold">{solicitud.sol_estado==0 ?"PENDIENTE" 
+                  <h1 className="border-2 rounded-lg px-2 bg-yellow-200 font-bold">
+                              { solicitud.sol_estado==0 ? "PENDIENTE" 
                               : solicitud.sol_estado==1 ? "EN REVISION"  
                               : solicitud.sol_estado==2 ? "EN VALIDACION"
                               : solicitud.sol_estado==3 ? "APROBADA"

@@ -161,9 +161,9 @@ export const updateSeguimiento = async(datos, id, token) => {
 
 //esta funcion devuelve la informacion de solicitudes de un mes dado 
 export const infoSolicitudes = async(query, token) => {
-    const {anual, mes} = query;
+    const {anual} = query;
     try {
-        const response = await fetch(`${endpoints.solicitudes}/info?anual=${anual}&mes=${mes}`, {
+        const response = await fetch(`${endpoints.solicitudes}/info?anual=${anual}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -177,3 +177,4 @@ export const infoSolicitudes = async(query, token) => {
         return { status: 600, message: "Unhandler error", error: error }
     }
 };
+
