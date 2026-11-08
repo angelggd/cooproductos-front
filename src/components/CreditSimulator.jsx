@@ -150,7 +150,7 @@ export default function CreditSimulator() {
         inversion,
      });
      localStorage.setItem("solicitud", solicitudJSON);
-     navigate('/VistaSolicitud');
+     navigate('/PreSolicitud');
   };
 
   return (

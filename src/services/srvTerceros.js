@@ -90,3 +90,21 @@ export const updateTercero = async(datos, id) => {
         return { status: 600, message: "Unhandler error", error: error }
     }
 };
+
+//esta funcion busca terceros por el numero de la cedula
+export const searchTerceroByCedula = async(query) => {
+    const {ter_documento} = query;
+    try {
+        const response = await fetch(`${endpoints.terceros}/filter?ter_documento=${ter_documento}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};

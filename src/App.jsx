@@ -5,7 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { VistaHome } from "./views/VistaHome"
 import AuthView from "./views/AuthView"
 import NotFoundView from "./views/NotFoundView"
-import VistaSolicitud from "./views/VistaSolicitud"
+import VistaSolicitud from "./views/VistaSolicitud";
+import PreSolicitud from "./views/PreSolicitud";
 import DashboardView from "./views/DashboardView" 
 import { UserLoginProvider } from "./context/UserLoginProvider";
 import { RutaProtegida } from "./components/RutaProtegida";
@@ -26,6 +27,7 @@ function App() {
 
 
         <Route path="*" element={<NotFoundView />} />
+        <Route path="/PreSolicitud" element={<PreSolicitud />} />
         <Route path="/VistaSolicitud" element={<VistaSolicitud />} />
       </Routes>
       <ToastContainer

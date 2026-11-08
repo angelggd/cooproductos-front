@@ -8,7 +8,7 @@ import { getPaises, getDptos, getCiudades, getTipodoc,
          getEstcivil, getNivEducativo, getOcupaciones, getVivienda } from '../services/srvGenerales';
 import { getPagadurias, getVendedor } from '../services/srvCreditos';
 import { verificaEmail, enviaSolicitud } from '../services/srvMailers';
-import { saveTercero } from '../services/srvTerceros';
+import { saveTercero, searchTerceroByCedula } from '../services/srvTerceros';
 import { saveCliente, getClienteByTerceroId } from '../services/srvClientes';
 import { saveUser, getUserById } from '../services/srvUsers';
 import { saveSolicitud, devuelveFechaFormateada } from '../services/srvSolicitudes';
@@ -17,6 +17,7 @@ import { endpoints } from '../config/endpoints';
 
 function VistaSolicitud() {
     let solicitud = JSON.parse(localStorage.getItem("solicitud"));
+    let zcliente = JSON.parse(localStorage.getItem("cliente"));
     const user = JSON.parse(localStorage.getItem("user"));
     const navigate = useNavigate();
     const [file, setFile] = useState(null);
@@ -37,26 +38,26 @@ function VistaSolicitud() {
     const [vendedor, setVendedor] = useState([]);
     const [confirmar, setConfirmar] = useState(false);
     const [validador, setValidador] = useState(false);
-    const [zapsign, setZapsign] = useState(false);
     const [grabando, setGrabando] = useState(false);
     const [cliente, setCliente] = useState({
         id: 0,
         tercero_id: 0,
-        ter_razon: "",
-        tipodoc_id: 0,
-        ter_apellido1: "",
-        ter_apellido2: "",
-        ter_nombre1: "",
-        ter_nombre2: "",
-        ter_documento: "",
+        ter_razon: zcliente.ter_razon,
+        tipodoc_id: zcliente.tipodoc_id,
+        ter_apellido1: zcliente.ter_apellido1,
+        ter_apellido2: zcliente.ter_apellido2,
+        ter_nombre1: zcliente.ter_nombre1,
+        ter_nombre2: zcliente.ter_nombre2,
+        ter_documento: zcliente.ter_documento,
+        tipopersona_id: zcliente.tipopersona_id,
         pais_id: 0,
         dpto_id: 0,
         ciudad_id: 0,
         sexo: 0,
-        ter_email: "",
+        ter_email: zcliente.ter_email,
         ter_direccion : "",
         ter_telefono: "",
-        ter_celular: "",
+        ter_celular: zcliente.ter_celular,
         respfiscal_id: 1,
         fechanac: "",
         dptores_id:0,
@@ -222,13 +223,15 @@ function VistaSolicitud() {
         setVendedor(resul.data)
     };
 
-    //carga del cliente si esta logueado
+    //carga del cliente si ya existe en la BD
     const cargarCliente = async() => {
-       if(user.id==0) return;   //usuario no logueado
-       if(user.roll_id<5) return;  //esta opcion es solo para usuarios nivel 5 (clientes)
-       const resul1 = await getUserById(user.id);
-       if(resul1.status!==200) return; //ocurrio error al consultar el usuario
-       const idtercero = resul1.data.tercero_id;
+       const query = {ter_documento: cliente.ter_documento}
+       const resul1 = await searchTerceroByCedula(query);
+       if(resul1.status!==200) return;
+       console.log(resul1.data)
+       if(resul1.data.length==0) return;
+       const reg = resul1.data[0];
+       const idtercero = reg.id;
        const resul2 = await getClienteByTerceroId(idtercero);
        if(resul2.status!==200) return; //ocurrio error al consultar el cliente
        const xcliente = resul2.data;
@@ -246,21 +249,22 @@ function VistaSolicitud() {
        const clien = {
         id: xcliente.id,
         tercero_id: idtercero,
+        tipopersona_id: xcliente.gnr_tercero.tipopersona_id,
         ter_razon: xcliente.gnr_tercero.ter_razon,
         tipodoc_id: xcliente.gnr_tercero.tipodoc_id,
         ter_apellido1: xcliente.gnr_tercero.ter_apellido1,
         ter_apellido2: xcliente.gnr_tercero.ter_apellido2,
         ter_nombre1: xcliente.gnr_tercero.ter_nombre1,
         ter_nombre2: xcliente.gnr_tercero.ter_nombre2,
-        ter_documento: xcliente.gnr_tercero.ter_documento,
+        ter_documento: zcliente.ter_documento,
         pais_id: xcliente.gnr_tercero.gnr_ciudad.gnr_departamento.pais_id,
         dpto_id: xcliente.gnr_tercero.gnr_ciudad.departamento_id,
         ciudad_id: xcliente.gnr_tercero.ciudad_id,
         sexo: xcliente.cli_sexo,
-        ter_email: xcliente.gnr_tercero.ter_email,
+        ter_email: zcliente.ter_email,
         ter_direccion : xcliente.gnr_tercero.ter_direccion,
         ter_telefono: xcliente.gnr_tercero.ter_telefono,
-        ter_celular: xcliente.gnr_tercero.ter_movil,
+        ter_celular: zcliente.ter_celular,
         respfiscal_id: xcliente.gnr_tercero.respfiscal_id,
         fechanac: xcliente.cli_fechanac,
         dptores_id:xcliente.gnr_ciudad.departamento_id,
@@ -578,12 +582,6 @@ function VistaSolicitud() {
       navigate('/');
     };
 
-    //se dispara con el boton validar identidad, esto lanza una ventana nueva para entrar a la pagina zapsign
-    //y activa el boton de envio de solicitudes
-    const validaIdentidad = () => {
-       setZapsign(true);
-       window.open("https://app2.zapsign.com.br/access/sign-in", "_blank") 
-    };
 
     const cargarVolante = (e) => {
         setNombreFile(e.target.files[0]?.name || "");
@@ -946,7 +944,7 @@ function VistaSolicitud() {
        {grabando == false &&
           <div className="w-full flex mt-2 md:mt-4 justify-center px-4 text-[12px]">
               <div className="flex items-center gap-1 md:gap-3 mb-4 md:mb-10 mr-2 md:mr-4">
-                 <label htmlFor="archivo" className="cursor-pointer bg-green-100 px-4 py-2 rounded-lg border-2 border-green-500" >
+                 <label htmlFor="archivo" className="cursor-pointer bg-green-100 px-4 py-3 rounded-lg border-2 border-green-500" >
                     Cargar Volante de Pago
                  </label>
                  <input type="file"
@@ -959,17 +957,10 @@ function VistaSolicitud() {
                     {nombreFile || ""}
                  </span>
               </div>
-              <button className="bg-green-600 text-white text-center py-2 px-4 md:px-10 mb-4 md:mb-10 rounded-lg text-[12px] md:text-[20px] cursor-pointer hover:bg-green-800 mr-2 md:mr-5"
-                 onClick={()=>validaIdentidad()}     
-              >Validar Identidad</button>
-              {zapsign ?
-                <button className="bg-green-600 text-white text-center py-2 px-4 md:px-10 mb-4 md:mb-10 rounded-lg text-[12px] md:text-[20px] cursor-pointer hover:bg-green-800"
+              <button className="bg-green-600 text-white text-center py-2 px-4 md:px-10 mb-4 md:mb-10 rounded-lg text-[12px] md:text-[20px] cursor-pointer hover:bg-green-800"
                   onClick={()=>paso1()}
                 >Enviar Solicitud</button>
-              : <button className="bg-gray-300 text-white text-center py-2 px-4 md:px-10 mb-4 md:mb-10 rounded-lg text-[12px] md:text-[20px]"
-                  onClick={()=>toast.info("Presione primero el botón de validación de identidad")}
-              >Enviar Solicitud</button>
-              }
+
           </div>
        }
        {/*Caja de confirmacion*/}
