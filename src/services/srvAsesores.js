@@ -2,13 +2,14 @@ import { endpoints } from '../config/endpoints';
 
 
 //esta funcion devuelve los asesores
-export const getAsesores = async(query) => {
+export const getAsesores = async(query, token) => {
     const {act} = query;
     try {
         const response = await fetch(`${endpoints.asesores}?act=${act}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -20,12 +21,13 @@ export const getAsesores = async(query) => {
 };
 
 //esta funcion devuelve los asesores
-export const getAsesorById = async(id) => {
+export const getAsesorById = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.asesores}/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -38,12 +40,13 @@ export const getAsesorById = async(id) => {
 
 
 //esta funcion devuelve los asesores
-export const saveAsesor = async(datos) => {
+export const saveAsesor = async(datos, token) => {
     try {
         const response = await fetch(`${endpoints.asesores}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
         });
@@ -55,14 +58,14 @@ export const saveAsesor = async(datos) => {
     }
 };
 
-//esta funcion devuelve los asesores
-export const toggleAsesor = async(id) => {
-    console.log("Asesor",id)
+//esta funcion activa o inactiva asesores
+export const toggleAsesor = async(id, token) => {
     try {
-        const response = await fetch(`${endpoints.asesores}/${id}`, {
+        const response = await fetch(`${endpoints.asesores}/toggle/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();

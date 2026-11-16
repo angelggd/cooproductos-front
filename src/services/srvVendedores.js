@@ -2,13 +2,14 @@ import { endpoints } from '../config/endpoints';
 
 
 //esta funcion devuelve el conteo de los vendedores
-export const countVendedores = async(query) => {
+export const countVendedores = async(query, token) => {
     const {act,out} = query;
     try {
         const response = await fetch(`${endpoints.vendedores}/count?act=${act}&out=${out}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -20,13 +21,14 @@ export const countVendedores = async(query) => {
 };
 
 //esta funcion devuelve los vendedores paginados
-export const cargarVendedores = async(query) => {
+export const cargarVendedores = async(query, token) => {
     const {lim, npag, act, out} = query;
     try {
         const response = await fetch(`${endpoints.vendedores}/paginacion?lim=${lim}&npag=${npag}&act=${act}&out=${out}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -39,13 +41,14 @@ export const cargarVendedores = async(query) => {
 
 
 //esta funcion devuelve los vendedores
-export const getVendedores = async(query) => {
+export const getVendedores = async(query, token) => {
     const {act} = query;
     try {
         const response = await fetch(`${endpoints.vendedores}?act=${act}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -57,12 +60,13 @@ export const getVendedores = async(query) => {
 };
 
 //esta funcion devuelve los vendedores
-export const getVendedorById = async(id) => {
+export const getVendedorById = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.vendedores}/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -75,12 +79,13 @@ export const getVendedorById = async(id) => {
 
 
 //esta funcion devuelve los vendedores
-export const saveVendedor = async(datos) => {
+export const saveVendedor = async(datos, token) => {
     try {
         const response = await fetch(`${endpoints.vendedores}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
         });
@@ -93,12 +98,13 @@ export const saveVendedor = async(datos) => {
 };
 
 //esta funcion devuelve los vendedores
-export const updateVendedor = async(datos, id) => {
+export const updateVendedor = async(datos, id, token) => {
     try {
         const response = await fetch(`${endpoints.vendedores}/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
         });
@@ -111,12 +117,13 @@ export const updateVendedor = async(datos, id) => {
 };
 
 //esta funcion cambia estado de un vendedor
-export const toggleVendedor = async(id) => {
+export const toggleVendedor = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.vendedores}/toggle/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();

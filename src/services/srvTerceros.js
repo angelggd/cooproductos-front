@@ -1,12 +1,13 @@
 import { endpoints } from '../config/endpoints';
 
 //esta funcion devuelve el numero de registros de la tabla de terceros
-export const countTerceros = async() => {
+export const countTerceros = async(token) => {
     try {
         const response = await fetch(`${endpoints.terceros}/count`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -18,13 +19,14 @@ export const countTerceros = async() => {
 };
 
 //esta funcion devuelve los terceros
-export const getTerceros = async(query) => {
+export const getTerceros = async(query, token) => {
     const {pag, lim, npag} = query;
     try {
         const response = await fetch(`${endpoints.users}/count?pag=${pag}&lim=${lim}&npag=${npag}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -36,12 +38,13 @@ export const getTerceros = async(query) => {
 };
 
 //esta funcion devuelve tercero por su id
-export const getTerceroById = async(id) => {
+export const getTerceroById = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.terceros}/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -54,12 +57,13 @@ export const getTerceroById = async(id) => {
 
 
 //esta funcion guarda la informacion del nuevo tercero
-export const saveTercero = async(datos) => {
+export const saveTercero = async(datos, token) => {
     try {
         const response = await fetch(`${endpoints.terceros}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
 
@@ -73,12 +77,13 @@ export const saveTercero = async(datos) => {
 };
 
 //esta funcion actualiza la informacion del tercero
-export const updateTercero = async(datos, id) => {
+export const updateTercero = async(datos, id, token) => {
     try {
         const response = await fetch(`${endpoints.terceros}/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
 
@@ -92,13 +97,14 @@ export const updateTercero = async(datos, id) => {
 };
 
 //esta funcion busca terceros por el numero de la cedula
-export const searchTerceroByCedula = async(query) => {
+export const searchTerceroByCedula = async(query, token) => {
     const {ter_documento} = query;
     try {
         const response = await fetch(`${endpoints.terceros}/filter?ter_documento=${ter_documento}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();

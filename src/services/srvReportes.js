@@ -1,12 +1,13 @@
 import { endpoints } from '../config/endpoints';
 
 //esta funcion genera el archivo pdf de la solicitud de credito
-export const generarSolicitud = async(datos) => {
+export const generarSolicitud = async(datos, token) => {
     try {
         const response = await fetch(`${endpoints.reportes}/solicitud`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos),
         });

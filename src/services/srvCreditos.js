@@ -1,13 +1,14 @@
 import { endpoints } from '../config/endpoints';
 
 //esta funcion devuelve tasa efectiva mensual de un periodo
-export const getTasaByPeriodo = async(query) => {
+export const getTasaByPeriodo = async(query, token) => {
     const {tas_anual, tas_mes} = query;
     try {
         const response = await fetch(`${endpoints.creditos}/tasas/periodo?tas_anual=${tas_anual}&tas_mes=${tas_mes}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -19,13 +20,14 @@ export const getTasaByPeriodo = async(query) => {
 };
 
 //esta funcion devuelve las pagadurias en convenio
-export const getPagadurias = async(query) => {
+export const getPagadurias = async(query, token) => {
     const {act} = query;
     try {
         const response = await fetch(`${endpoints.creditos}/pagadurias?act=${act}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -38,13 +40,14 @@ export const getPagadurias = async(query) => {
 
 
 //esta funcion devuelve los vendedores
-export const getVendedor = async(query) => {
+export const getVendedor = async(query, token) => {
     const {act} = query;
     try {
         const response = await fetch(`${endpoints.creditos}/vendedores?act=${act}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -56,13 +59,14 @@ export const getVendedor = async(query) => {
 };
 
 //esta funcion devuelve los modelos de credito
-export const getModelos = async(query) => {
+export const getModelos = async(query, token) => {
     const {act} = query;
     try {
         const response = await fetch(`${endpoints.creditos}/modelos?act=${act}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();

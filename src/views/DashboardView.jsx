@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useUserLogin } from '../context/useUserLogin';
+//import { useUserLogin } from '../context/useUserLogin';
 import { useNavigate } from 'react-router-dom';
 import { getTerceroById } from '../services/srvTerceros';
+import { getUserById } from '../services/srvUsers'
 import GestionUsers from '../components/GestionUsers';
 import CreditSimulator from '../components/CreditSimulator';
 import Solicitudes from '../components/Solicitudes';
@@ -12,7 +13,8 @@ import GestionClientes from '../components/GestionClientes';
 
 
 export default function DashboardView() {
-  const { user: userLogin, logout } = useUserLogin();
+  //const { user: userLogin, logout } = useUserLogin();
+  const [user, setUser] = useState({});
   const xuser = JSON.parse(localStorage.getItem("user"));
   const [menuOptions, setMenuOptions] = useState([]);
   const navigate = useNavigate();
@@ -46,53 +48,32 @@ export default function DashboardView() {
      setMenuOptions(filtro);
   };
 
+  //funcion para cargar datos del tercero
+  const cargarTercero = async() => {
+     const resul0 = await getUserById(xuser.id, xuser.token);
+     if(resul0.status!==200) return;
+     const resul = await getTerceroById(xuser.tercero_id);
+     if(resul.status!==200) return;
+     setTercero(resul.data);
+     const juser = {
+        name: resul.data.ter_razon,
+        role: resul0.data.gnr_roll.roll_nombre,
+        email: resul.data.ter_email,
+     };
+     setUser(juser);
+  };
+  
   useEffect(()=>{
+    if(xuser.id==0) navigate("/");
+    cargarTercero();
     cargarMenu();
   },[])
 
-  useEffect(()=>{
-    const datosTercero = async () => {
-
-      // 1. Validar que exista el id antes de consultar
-      if (!userLogin?.tercero_id) {
-        console.log('tercero id dasboar', userLogin.tercero_id);
-        return;
-      }
-
-      try {
-        const data = await getTerceroById(userLogin.tercero_id)
-       setTercero(data)
-      } catch (error) {
-        console.log('ocurrio un error', error);
-      } 
-      
-    }
-
-    datosTercero(userLogin.tercero_id)
-    /*  */
-  },[userLogin?.tercero_id])
-
-
- //console.log('datos tercero dasboard', tercero)
-// 3. Proteger si el usuario no tiene tercero asignado
-  if (!tercero) {
-    return <p>No se encontraron datos para este usuario o no tiene un tercero asociado.</p>;
-  }
-
-  // Datos simulados del usuario
-  const user = {
-    name: tercero.data.ter_nombre1.charAt(0).toUpperCase()+tercero.data.ter_nombre1.slice(1).toLowerCase().concat(' ', tercero.data.ter_apellido1.charAt(0).toUpperCase()+tercero.data.ter_apellido1.slice(1).toLowerCase()),
-    role: userLogin.rol.charAt(0).toUpperCase()+userLogin.rol.slice(1).toLowerCase(),
-    email: tercero.data.ter_email,
-  };
-
-
-
+  
  
 
   // Función auxiliar para cambiar de vista y cerrar el menú en móvil
   const handleMenuClick = (viewId) => {
-    
     setActiveView(viewId);
     setShowMobileMenu(false);
   };

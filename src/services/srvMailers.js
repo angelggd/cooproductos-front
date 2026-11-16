@@ -1,12 +1,13 @@
 import { endpoints } from '../config/endpoints';
 
 //esta funcion envia el correo al cliente para la verificacion del email
-export const verificaEmail = async(cliente) => {
+export const verificaEmail = async(cliente, token) => {
     try {
         const response = await fetch(`${endpoints.mailers}/usuario`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(cliente),
         });
@@ -38,12 +39,13 @@ export const verificaSolicitud = async(cliente, token) => {
 };
 
 //esta funcion envia el correo al cliente con los datos de la solicitud
-export const enviaSolicitud = async(datos) => {
+export const enviaSolicitud = async(datos, token) => {
     try {
         const response = await fetch(`${endpoints.mailers}/solicitud`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos),
         });

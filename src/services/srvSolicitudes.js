@@ -65,12 +65,13 @@ export const getSolicitudById = async(id, token) => {
 };
 
 //esta funcion guarda una solicitud
-export const saveSolicitud = async(datos) => {
+export const saveSolicitud = async(datos, token) => {
     try {
         const response = await fetch(`${endpoints.solicitudes}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
         });
@@ -84,12 +85,13 @@ export const saveSolicitud = async(datos) => {
 
 
 //esta funcion actualiza una solicitud
-export const updateSolicitud = async(datos, id) => {
+export const updateSolicitud = async(datos, id, token) => {
     try {
         const response = await fetch(`${endpoints.solicitudes}/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
         });

@@ -1,12 +1,13 @@
 import { endpoints } from '../config/endpoints';
 
 //esta funcion devuelve los paises
-export const getPaises = async() => {
+export const getPaises = async(token) => {
     try {
         const response = await fetch(`${endpoints.generales}/paises`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -18,12 +19,13 @@ export const getPaises = async() => {
 };
 
 //esta funcion devuelve los departamentos de un pais
-export const getDptos = async(id) => {
+export const getDptos = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.generales}/dptos/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -35,12 +37,13 @@ export const getDptos = async(id) => {
 };
 
 //esta funcion devuelve las ciudades de un departamento
-export const getCiudades = async(id) => {
+export const getCiudades = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.generales}/ciudades/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -52,12 +55,13 @@ export const getCiudades = async(id) => {
 };    
 
 //esta funcion devuelve la ciudad por su id
-export const getCiudad = async(id) => {
+export const getCiudad = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.generales}/ciudad/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -70,12 +74,13 @@ export const getCiudad = async(id) => {
 
 
 //esta funcion devuelve los tipos de documento
-export const getTipodoc = async() => {
+export const getTipodoc = async(token) => {
     try {
         const response = await fetch(`${endpoints.generales}/tipodoc`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -87,12 +92,13 @@ export const getTipodoc = async() => {
 };    
 
 //esta funcion devuelve las responsabilidades fiscales
-export const getRespFiscal = async() => {
+export const getRespFiscal = async(token) => {
     try {
         const response = await fetch(`${endpoints.generales}/respfiscal`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -104,12 +110,13 @@ export const getRespFiscal = async() => {
 };    
 
 //esta funcion devuelve las ocupaciones
-export const getOcupaciones = async() => {
+export const getOcupaciones = async(token) => {
     try {
         const response = await fetch(`${endpoints.generales}/ocupacion`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -121,12 +128,13 @@ export const getOcupaciones = async() => {
 };    
 
 //esta funcion devuelve los estados civiles
-export const getEstcivil = async() => {
+export const getEstcivil = async(token) => {
     try {
         const response = await fetch(`${endpoints.generales}/estcivil`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -138,12 +146,13 @@ export const getEstcivil = async() => {
 };    
 
 //esta funcion devuelve los niveles educativos
-export const getNivEducativo = async() => {
+export const getNivEducativo = async(token) => {
     try {
         const response = await fetch(`${endpoints.generales}/niveducativo`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -155,12 +164,13 @@ export const getNivEducativo = async() => {
 };    
 
 //esta funcion devuelve los tipos de vivienda
-export const getVivienda = async() => {
+export const getVivienda = async(token) => {
     try {
         const response = await fetch(`${endpoints.generales}/vivienda`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -172,12 +182,13 @@ export const getVivienda = async() => {
 };    
 
 //esta funcion devuelve los parametros
-export const getParametros = async() => {
+export const getParametros = async(token) => {
     try {
         const response = await fetch(`${endpoints.generales}/parametros`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -189,13 +200,14 @@ export const getParametros = async() => {
 };    
 
 //esta funcion devuelve los tipos de vivienda
-export const getParametroByCod = async(query) => {
+export const getParametroByCod = async(query, token) => {
     const {codigo} = query;
     try {
         const response = await fetch(`${endpoints.generales}/parametroByCod?codigo=${codigo}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();

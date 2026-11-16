@@ -23,6 +23,7 @@ export default function CreditSimulator() {
      const mes = hoy.getMonth() + 1;
      const query = {tas_anual:anual, tas_mes:mes};
      const resul = await getTasaByPeriodo(query);
+   
      if(resul.status!==200) {
         toast.error("Error al consultar la tasa efectiva anual");
         return;

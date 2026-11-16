@@ -10,7 +10,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const navLinks = [
-    { name: 'Inicio', href: '#' },
+    { name: 'Inicio', href: '/dashboard' },
     { name: 'Nosotros', href: '#nosotros' },
     { name: 'Productos', href: '#productos' },
     { name: 'Simulador', href: '#simulador' },
@@ -52,7 +52,7 @@ export default function Navbar() {
             <a 
               key={link.name} 
               href={link.href} 
-              className="hover:text-accent transition-colors font-medium font-semibold"
+              className="hover:text-accent transition-colors font-semibold"
             >
               {link.name}
             </a>
@@ -68,7 +68,7 @@ export default function Navbar() {
                </Link>
              : <div className="text-center hidden sm:block border-2 rounded-lg p-2">
                  <p className="text-[10px] font-bold text-gray-400 leading-none mb-1">{user.username}</p>
-                 <button className="bg-green-950 text-center rounded-lg px-2 hover:bg-green-800" onClick={()=>cierraSesion()}>Cerrar Sesión</button>
+                 <button className="bg-green-950 text-white text-center rounded-lg px-2 hover:bg-green-800" onClick={()=>cierraSesion()}>Cerrar Sesión</button>
                </div>
           }
         </nav>

@@ -1,13 +1,14 @@
 import { endpoints } from '../config/endpoints';
 
 //esta funcion devuelve el numero de registros de la tabla de usuarios de un roll definido
-export const countUsers = async(query) => {
+export const countUsers = async(query, token) => {
     const {roll_id, act} = query;
     try {
         const response = await fetch(`${endpoints.users}/count?roll_id=${roll_id}&act=${act}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -19,13 +20,14 @@ export const countUsers = async(query) => {
 };
 
 //esta funcion devuelve los usuarios 
-export const getUsers = async(query) => {
+export const getUsers = async(query, token) => {
     const {act, lim, npag, roll_id} = query;
     try {
         const response = await fetch(`${endpoints.users}?roll_id=${roll_id}&act=${act}&lim=${lim}&npag=${npag}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -37,12 +39,13 @@ export const getUsers = async(query) => {
 };
 
 //esta funcion devuelve el usuario por su ID
-export const getUserById = async(id) => {
+export const getUserById = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.users}/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -55,12 +58,13 @@ export const getUserById = async(id) => {
 
 
 //esta funcion guarda la informacion del nuevo usuario
-export const saveUser = async(datos) => {
+export const saveUser = async(datos, token) => {
     try {
         const response = await fetch(`${endpoints.users}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
 
@@ -74,12 +78,13 @@ export const saveUser = async(datos) => {
 };
 
 //esta funcion hace login real de usuarios
-export const loginUser = async(query) => {
+export const loginUser = async(query, token) => {
     try {
         const response = await fetch(`${endpoints.users}/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(query)
 
@@ -93,12 +98,13 @@ export const loginUser = async(query) => {
 };
 
 //esta funcion actualiza la informacion del usuario
-export const updateUser = async(datos, id) => {
+export const updateUser = async(datos, id, token) => {
     try {
         const response = await fetch(`${endpoints.users}/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
 
@@ -112,12 +118,13 @@ export const updateUser = async(datos, id) => {
 };
 
 //esta funcion actualiza la clave del usuario
-export const cambiarClaveUser = async(datos, id) => {
+export const cambiarClaveUser = async(datos, id, token) => {
     try {
         const response = await fetch(`${endpoints.users}/password/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
             body: JSON.stringify(datos)
 
@@ -131,12 +138,13 @@ export const cambiarClaveUser = async(datos, id) => {
 };
 
 //esta funcion cambia el estado del usuario
-export const toggleUser = async(id) => {
+export const toggleUser = async(id, token) => {
     try {
         const response = await fetch(`${endpoints.users}/toggle/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();
@@ -148,12 +156,13 @@ export const toggleUser = async(id) => {
 };
 
 //esta funcion devuelve los rolles
-export const getRolles = async() => {
+export const getRolles = async(token) => {
     try {
         const response = await fetch(`${endpoints.users}/rolles`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "token": token,
             },
         });
         const data = await response.json();

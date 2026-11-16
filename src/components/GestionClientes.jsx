@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { countClientes, getClientes, getClienteById, saveCliente, updateCliente } from '../services/srvClientes';
+import { countClientes, getClientes, getClienteById, saveCliente, updateCliente, toggleCliente } from '../services/srvClientes';
 import { toast } from "react-toastify";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
@@ -209,7 +209,7 @@ function GestionClientes() {
  
     //carga de clientes
     const cargaClientes = async(query) => {
-        const result1 = await countClientes(query);
+        const result1 = await countClientes(query, user.token);
         if(!result1.status==200) {
            toast.error("Ocurrio un error al ejecutar el conteo de los registros");
            return;
@@ -219,7 +219,7 @@ function GestionClientes() {
         const calc = Math.round(treg / 20);
         const xp = calc * 20 < treg ? calc + 1 : calc; 
         setPaginacion({totregistros: treg, totpaginas: xp});
-        const result2 = await getClientes(query);
+        const result2 = await getClientes(query, user.token);
         if(!result2.status==200) {
            toast.error("Error al cargar los registros");
            return;
@@ -244,7 +244,7 @@ function GestionClientes() {
    
     //ocurre cuando se selecciona un Cliente para su edicion
     const seleccionarCliente = async(id) => {
-       const resul = await getClienteById(id);
+       const resul = await getClienteById(id, user.token);
        if(!resul.status==200) return;
        const registro = resul.data;
        const dpt = registro.gnr_tercero.gnr_ciudad.departamento_id;
@@ -359,7 +359,7 @@ function GestionClientes() {
  
     //cambiar de estado un cliente
     const  cambiaEstadoCliente = async(id) => {
-       const resul = await toggleCliente(id);
+       const resul = await toggleCliente(id, user.token);
        if(!resul.status==200) {
           toast.error("Ocurrio un error al actualizar estado del Cliente");
           return;
@@ -425,7 +425,7 @@ function GestionClientes() {
        };
        if(idtercero==0) {
           //creamos el tercero
-          const resul1 = await saveTercero(datosTercero);
+          const resul1 = await saveTercero(datosTercero, user.token);
           if(!resul1.status==200) {
              toast.error("Ocurrio un error al actualizar el tercero");
              return;
@@ -434,7 +434,7 @@ function GestionClientes() {
           idtercero = tercero.id;
        } else {
           //actualizamos el tercero
-          const resul2 = await updateTercero(datosTercero, idtercero);
+          const resul2 = await updateTercero(datosTercero, idtercero, user.token);
           if(!resul2.status==200) {
              toast.error("Ocurrio un error al actualizar el tercero");
              return;
@@ -449,7 +449,7 @@ function GestionClientes() {
                roll_id: 5,
                documento: cliente.ter_documento,
             };
-            const resul3 = await saveUser(datosUser);
+            const resul3 = await saveUser(datosUser, user.token);
             if(resul3.status!==200) {
                 toast.error("Ocurrio un error al crear el usuario");
                 return;
@@ -483,13 +483,13 @@ function GestionClientes() {
           }
        };
        if(cliente.id==0) {
-          const resul3 = await saveCliente(datosCliente);
+          const resul3 = await saveCliente(datosCliente, user.token);
           if(!resul3.status==200) {
              toast.error("Ocurrio un error al crear Cliente");
              return;
           };
        } else {
-          const resul4 = await updateCliente(datosCliente, cliente.id);
+          const resul4 = await updateCliente(datosCliente, cliente.id, user.token);
           if(!resul4.status==200) {
              toast.error("Ocurrio un error al actualizar Cliente");
              return;

@@ -21,7 +21,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route index element={<VistaHome/>} />      
-        <Route path="/dashboard" element={<RutaProtegida><DashboardView /></RutaProtegida>} />
+        <Route path="/dashboard" element={<DashboardView/>} />
   
         <Route path="/auth" element={<AuthView/>} />
 

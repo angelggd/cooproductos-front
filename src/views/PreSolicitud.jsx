@@ -4,13 +4,13 @@ import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import  {Dialog}  from 'primereact/dialog';
-import { getTipodoc } from '../services/srvGenerales';
+import { getTipodoc, getParametroByCod } from '../services/srvGenerales';
 
 function PreSolicitud() {
     let solicitud = JSON.parse(localStorage.getItem("solicitud"));
     const user = JSON.parse(localStorage.getItem("user"));
     const navigate = useNavigate();
-    const [validaI, setValidaI] = useState(false);
+    const [validaI, setValidaI] = useState(0);
     const [tipodocu, setTipodocu] = useState([]);
     const [cliente, setCliente] = useState({
         ter_razon: "",
@@ -36,7 +36,17 @@ function PreSolicitud() {
         setTipodocu(resul.data);
     };
 
-        //funcion que se dispara cuando se van llenando los campos del formulario de datos del cliente
+    //FUNCION QUE CARGA EL PARAMETRO DE ALOJAMIENTO DEL LINK DE DATACREDITO
+    const cargaLink = async() => {
+        const resul = await getParametroByCod({codigo:"003"});
+        if(resul.status!==200) {
+           toast.error("Ocurrio un error al cargar el parametro 003");
+           return "";
+        };
+      return resul.data.par_valor;
+    };
+
+    //funcion que se dispara cuando se van llenando los campos del formulario de datos del cliente
     const cambios = async(e) => {
         const propiedad = e.target.name;
         const valor = e.target.value;
@@ -96,17 +106,40 @@ function PreSolicitud() {
         return {error:false, msg:""}
     };
 
-    const validaIdentidad = () => {
+    //esta funcion va ingresando a los link solicitados del paso a paso
+    const validaIdentidad = async(x) => {
        const valida = validacion();
        if(valida.error) {
           toast.warning(valida.msg);
           return;
        };
-       setValidaI(true);
-       window.open("https://app2.zapsign.com.br/access/sign-in", "_blank") 
+       if(x==1) {
+          if(validaI!==0) return;
+          setValidaI(1);
+          window.open("https://app2.zapsign.com.br/access/sign-in", "_blank");
+          return;
+       };    
+       if(x==2) {
+          const xlink = await cargaLink();
+          if(validaI!==1) return;
+          setValidaI(2);
+          window.open(xlink, "_blank");
+          return;
+       };    
+       if(x==3) {
+          if(validaI!==2) return;
+          setValidaI(3);
+          window.open("https://app2.zapsign.com.br/access/sign-in", "_blank");
+          return;
+       };    
     };
 
     const seguirSolicitud = () => {
+        if(cliente.robot==0) {
+           toast.warning("Roboto detectado");
+           return;
+        };
+        if(validaI!==3) return;
         const clienteJSON = JSON.stringify(cliente);
         localStorage.setItem("cliente", clienteJSON);      
         navigate('/VistaSolicitud')
@@ -241,9 +274,17 @@ function PreSolicitud() {
                            />
                            <h1 className="">No soy un Robot</h1>
                        </div>    
-                       {/* botones de acceso */}    
-                       <button className="bg-green-400 text-white p-2 rounded-lg text-lg hover:bg-green-600 cursor-pointer" onClick={()=>validaIdentidad()}>Validar Identidad</button>
-                       <button className={`text-white rounded-lg p-2 text-lg ${validaI ? "bg-green-400 hover:bg-green-600 cursor-pointer" :"bg-gray-300"}`} onClick={()=>seguirSolicitud()}>Continuar Solicitud</button>
+                       {/* botones de acceso */}  
+                       <div className="grid grid-cols-4 gap-3 col-span-2 p-2 border-2 border-gray-200">
+                          <h1 className="text-center">Paso 1</h1> 
+                          <h1 className="text-center">Paso 2</h1> 
+                          <h1 className="text-center">Paso 3</h1> 
+                          <h1 className="text-center">Paso 4</h1> 
+                          <button className={`text-white rounded-lg p-2 text-lg ${validaI==0 ? "bg-green-400 hover:bg-green-600 cursor-pointer" :"bg-gray-300"}`} onClick={()=>validaIdentidad(1)}>Validar Identidad</button>
+                          <button className={`text-white rounded-lg p-2 text-lg ${validaI==1 ? "bg-green-400 hover:bg-green-600 cursor-pointer" :"bg-gray-300"}`} onClick={()=>validaIdentidad(2)}>Validar Datacrédito</button>
+                          <button className={`text-white rounded-lg p-2 text-lg ${validaI==2 ? "bg-green-400 hover:bg-green-600 cursor-pointer" :"bg-gray-300"}`} onClick={()=>validaIdentidad(3)}>Validación ZapSign</button>
+                          <button className={`text-white rounded-lg p-2 text-lg ${validaI==3 ? "bg-green-400 hover:bg-green-600 cursor-pointer" :"bg-gray-300"}`} onClick={()=>seguirSolicitud()}>Continuar Solicitud</button>
+                       </div>  
                      </div>
                   </div>
               </div>
