@@ -79,7 +79,7 @@ function GestionClientes() {
  
     //cargue de paises
     const cargarPaises = async() => {
-        const resul = await getPaises();
+        const resul = await getPaises(user.token);
         if(resul.status!==200) return;
         setPaises(resul.data);
         setDptos([]);
@@ -88,7 +88,7 @@ function GestionClientes() {
 
     //cargue de dptos
     const cargarDptos = async(id, x) => {
-        const resul = await getDptos(id);
+        const resul = await getDptos(id, user.token);
         if(resul.status!==200) return;
         if(x==1) {
            setDptos(resul.data);
@@ -106,7 +106,7 @@ function GestionClientes() {
 
     //cargue de ciudades
     const cargarCiudades = async(id, x) => {
-        const resul = await getCiudades(id);
+        const resul = await getCiudades(id, user.token);
         if(x==1) setCiudades(resul.data);
         if(x==2) setCiudadesRes(resul.data);
         if(x==3) setCiulab(resul.data);
@@ -114,7 +114,7 @@ function GestionClientes() {
 
     //devuelve ciudad por su id
     const cargaCiudadById = async(id) => {
-       const resul = await getCiudad(id);
+       const resul = await getCiudad(id, user.token);
        if(resul.status!==200) {
           return {id:0, departamento_id:0};
        };
@@ -123,42 +123,42 @@ function GestionClientes() {
  
     //cargar tipo de documento
     const cargarTipodoc = async() => {
-         const resul = await getTipodoc();
+         const resul = await getTipodoc(user.token);
          if(resul.status!==200) return;
          setTipodocu(resul.data);
     };
  
     //cargue de pagadurias
     const cargarPagadurias = async() => {
-        const resul = await getPagadurias({act:1});
+        const resul = await getPagadurias({act:1}, user.token);
         if(resul.status!==200) return;
         setPagadurias(resul.data);
     };
 
    //cargue de viviendas
     const cargarViviendas = async() => {
-        const resul = await getVivienda();
+        const resul = await getVivienda(user.token);
         if(resul.status!==200) return;
         setVivienda(resul.data)
     };
 
     //cargar ocupaciones
     const cargarOcupacion = async() => {
-        const resul = await getOcupaciones();
+        const resul = await getOcupaciones(user.token);
         if(resul.status!==200) return;
         setOcupacion(resul.data);
     };
 
     //cargar nivel educativo
     const cargarNivelEdu = async() => {
-        const resul = await getNivEducativo();
+        const resul = await getNivEducativo(user.token);
         if(resul.status!==200) return;
         setNivEducativo(resul.data);
     };
 
     //cargar estados civiles
     const cargarEstCivil = async() => {
-        const resul = await getEstcivil();
+        const resul = await getEstcivil(user.token);
         if(resul.status!==200) return;
         setEstCivil(resul.data)
     };

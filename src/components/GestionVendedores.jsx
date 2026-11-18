@@ -28,7 +28,7 @@ function GestionVendedores() {
  
     //cargue de dptos
     const cargarDptos = async(id) => {
-         const resul = await getDptos(id);
+         const resul = await getDptos(id, user.token);
          if(resul.status!==200) return;
          setDptos(resul.data);
          setCiudades([]);
@@ -36,20 +36,21 @@ function GestionVendedores() {
  
     //cargue de ciudades
     const cargarCiudades = async(id) => {
-         const resul = await getCiudades(id);
+         const resul = await getCiudades(id, user.token);
+         if(resul.status!==200) return;
          setCiudades(resul.data);
     };
  
     //cargar tipo de documento
     const cargarTipodoc = async() => {
-         const resul = await getTipodoc();
+         const resul = await getTipodoc(user.token);
          if(resul.status!==200) return;
          setTipodocu(resul.data);
     };
  
     //carga de asesores
     const cargaAsesores = async() => {
-       const resul = await getAsesores({act:0});
+       const resul = await getAsesores({act:0}, user.token);
        if(resul.status!==200) {
            toast.error("Ocurrio un error al consultar asesores");
            return;
@@ -82,7 +83,7 @@ function GestionVendedores() {
  
     //carga de vendedores
     const cargavendedores = async(query) => {
-        const result1 = await countVendedores(query);
+        const result1 = await countVendedores(query, user.token);
         if(!result1.status==200) {
            toast.error("Ocurrio un error al ejecutar el conteo de los registros");
            return;
@@ -92,7 +93,7 @@ function GestionVendedores() {
         const calc = Math.round(treg / 20);
         const xp = calc * 20 < treg ? calc + 1 : calc; 
         setPaginacion({totregistros: treg, totpaginas: xp});
-        const result2 = await cargarVendedores(query);
+        const result2 = await cargarVendedores(query, user.token);
         if(!result2.status==200) {
            toast.error("Error al cargar los registros");
            return;
@@ -111,7 +112,7 @@ function GestionVendedores() {
    
     //ocurre cuando se selecciona un Vendedor para su edicion
     const seleccionarVendedor = async(id) => {
-       const resul = await getVendedorById(id);
+       const resul = await getVendedorById(id, user.token);
        if(!resul.status==200) return;
        const registro = resul.data;
        const dpt = registro.gnr_tercero.gnr_ciudad.departamento_id;
@@ -173,7 +174,7 @@ function GestionVendedores() {
  
     //cambiar de estado un Vendedor
     const  cambiaEstadoVendedor = async(id) => {
-       const resul = await toggleVendedor(id);
+       const resul = await toggleVendedor(id, user.token);
        if(!resul.status==200) {
           toast.error("Ocurrio un error al actualizar estado del Vendedor");
           return;
@@ -231,7 +232,7 @@ function GestionVendedores() {
        };
        if(idtercero==0) {
           //creamos el tercero
-          const resul1 = await saveTercero(datosTercero);
+          const resul1 = await saveTercero(datosTercero, user.token);
           if(!resul1.status==200) {
              toast.error("Ocurrio un error al actualizar el tercero");
              return;
@@ -240,7 +241,7 @@ function GestionVendedores() {
           idtercero = tercero.id;
        } else {
           //actualizamos el tercero
-          const resul2 = await updateTercero(datosTercero, idtercero);
+          const resul2 = await updateTercero(datosTercero, idtercero, user.token);
           if(!resul2.status==200) {
              toast.error("Ocurrio un error al actualizar el tercero");
              return;
@@ -254,13 +255,13 @@ function GestionVendedores() {
           outsorcing_id: selectedVendedor.asesor_id,
        };
        if(selectedVendedor.id==0) {
-          const resul3 = await saveVendedor(datosVendedor);
+          const resul3 = await saveVendedor(datosVendedor, user.token);
           if(!resul3.status==200) {
              toast.error("Ocurrio un error al actualizar Vendedor");
              return;
           };
        } else {
-          const resul4 = await updateVendedor(datosVendedor, selectedVendedor.id);
+          const resul4 = await updateVendedor(datosVendedor, selectedVendedor.id, user.token);
           if(!resul4.status==200) {
              toast.error("Ocurrio un error al actualizar Vendedor");
              return;

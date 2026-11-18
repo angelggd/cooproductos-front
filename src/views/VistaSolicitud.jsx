@@ -141,7 +141,7 @@ function VistaSolicitud() {
 
     //cargue de paises
     const cargarPaises = async() => {
-        const resul = await getPaises();
+        const resul = await getPaises(user.token);
         if(resul.status!==200) return;
         setPaises(resul.data);
         setDptos([]);
@@ -150,7 +150,7 @@ function VistaSolicitud() {
 
     //cargue de dptos
     const cargarDptos = async(id, x) => {
-        const resul = await getDptos(id);
+        const resul = await getDptos(id, user.token);
         if(resul.status!==200) return;
         if(x==1) {
            setDptos(resul.data);
@@ -168,7 +168,7 @@ function VistaSolicitud() {
 
     //cargue de ciudades
     const cargarCiudades = async(id, x) => {
-        const resul = await getCiudades(id);
+        const resul = await getCiudades(id, user.token);
         if(x==1) setCiudades(resul.data);
         if(x==2) setCiudadesRes(resul.data);
         if(x==3) setCiulab(resul.data);
@@ -176,49 +176,49 @@ function VistaSolicitud() {
 
     //cargar tipo de documento
     const cargarTipodoc = async() => {
-        const resul = await getTipodoc();
+        const resul = await getTipodoc(user.token);
         if(resul.status!==200) return;
         setTipodocu(resul.data);
     };
 
     //cargue de pagadurias
     const cargarPagadurias = async() => {
-        const resul = await getPagadurias({act:1});
+        const resul = await getPagadurias({act:1}, user.token);
         if(resul.status!==200) return;
         setPagadurias(resul.data);
     };
 
     //cargue de viviendas
     const cargarViviendas = async() => {
-        const resul = await getVivienda();
+        const resul = await getVivienda(user.token);
         if(resul.status!==200) return;
         setVivienda(resul.data)
     };
 
     //cargar ocupaciones
     const cargarOcupacion = async() => {
-        const resul = await getOcupaciones();
+        const resul = await getOcupaciones(user.token);
         if(resul.status!==200) return;
         setOcupacion(resul.data);
     };
 
     //cargar nivel educativo
     const cargarNivelEdu = async() => {
-        const resul = await getNivEducativo();
+        const resul = await getNivEducativo(user.token);
         if(resul.status!==200) return;
         setNivEducativo(resul.data);
     };
 
     //cargar estados civiles
     const cargarEstCivil = async() => {
-        const resul = await getEstcivil();
+        const resul = await getEstcivil(user.token);
         if(resul.status!==200) return;
         setEstCivil(resul.data)
     };
 
     //cargar vendedores
     const cargarVendedores = async() => {
-        const resul = await getVendedor({act:1});
+        const resul = await getVendedor({act:1}, user.token);
         if(resul.status!==200) return;
         setVendedor(resul.data)
     };
@@ -226,13 +226,13 @@ function VistaSolicitud() {
     //carga del cliente si ya existe en la BD
     const cargarCliente = async() => {
        const query = {ter_documento: cliente.ter_documento}
-       const resul1 = await searchTerceroByCedula(query);
+       const resul1 = await searchTerceroByCedula(query, user.token);
        if(resul1.status!==200) return;
        console.log(resul1.data)
        if(resul1.data.length==0) return;
        const reg = resul1.data[0];
        const idtercero = reg.id;
-       const resul2 = await getClienteByTerceroId(idtercero);
+       const resul2 = await getClienteByTerceroId(idtercero, user.token);
        if(resul2.status!==200) return; //ocurrio error al consultar el cliente
        const xcliente = resul2.data;
        const detacli = xcliente.cre_detaclientes[0]; //primer registro de la pagaduria
@@ -389,7 +389,7 @@ function VistaSolicitud() {
           email: cliente.ter_email, 
           documento: cliente.ter_documento, 
        };
-       const resul = await verificaEmail(clien);
+       const resul = await verificaEmail(clien, user.token);
        if(resul.status!==200) {
           toast.error("Ocurrio un error al intentar validar el email del cliente");
           return;
@@ -426,7 +426,7 @@ function VistaSolicitud() {
              ciudad_id: cliente.ciudad_id,
              respfiscal_id: 1,
           };
-          const resul1 = await saveTercero(tercero);
+          const resul1 = await saveTercero(tercero, user.token);
           if(resul1.status!==200) {
              toast.error("Ocurrio un error al guardar el tercero");
              return;
@@ -443,7 +443,7 @@ function VistaSolicitud() {
             roll_id: 5,
             documento: cliente.ter_documento,
           };
-          const resul3 = await saveUser(nuser);
+          const resul3 = await saveUser(nuser, user.token);
           if(resul3.status!==200) {
              toast.error("Ocurrio un error al crear el usuario");
              return;
@@ -477,7 +477,7 @@ function VistaSolicitud() {
                 pagaduria_id: cliente.empresa_id,
              }
           };
-          const resul2 = await saveCliente(xcliente);
+          const resul2 = await saveCliente(xcliente, user.token);
           if(resul2.status!==200) {
              toast.error("Ocurrio un error al guardar cliente");
              return;
@@ -525,7 +525,7 @@ function VistaSolicitud() {
           sol_token: firmadigital,
           sol_volantepago:imagenURL,
        };
-       const resul4 = await saveSolicitud(nsolicitud);
+       const resul4 = await saveSolicitud(nsolicitud, user.token);
        if(resul4.status!==200) {
           toast.error("Ocurrio un error al guardar la solicitud");
           return;
@@ -555,7 +555,7 @@ function VistaSolicitud() {
           token: firmadigital,
       }; 
       //generacion del archivo PDF
-      const resul2 = await generarSolicitud(pdatos);
+      const resul2 = await generarSolicitud(pdatos, user.token);
       if(!resul2.status==200) {
          toast.error("Ocurrio un error al generar el pdf de la solicitud");
          navigate('/');
@@ -572,7 +572,7 @@ function VistaSolicitud() {
          tasa: solicitud.tasa,
          token: firmadigital,
       };
-      const resul5 = await enviaSolicitud(sdatos);
+      const resul5 = await enviaSolicitud(sdatos, user.token);
       if(resul5.status!==200) {
          toast.success("Ocurrio un error al enviar la solicitud al correo");
          navigate('/');

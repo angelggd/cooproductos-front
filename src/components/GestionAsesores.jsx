@@ -20,7 +20,7 @@ function GestionAsesores() {
 
    //cargue de dptos
    const cargarDptos = async(id) => {
-        const resul = await getDptos(id);
+        const resul = await getDptos(id, user.token);
         if(resul.status!==200) return;
         setDptos(resul.data);
         setCiudades([]);
@@ -28,13 +28,13 @@ function GestionAsesores() {
 
    //cargue de ciudades
    const cargarCiudades = async(id) => {
-        const resul = await getCiudades(id);
+        const resul = await getCiudades(id, user.token);
         setCiudades(resul.data);
    };
 
    //cargar tipo de documento
    const cargarTipodoc = async() => {
-        const resul = await getTipodoc();
+        const resul = await getTipodoc(user.token);
         if(resul.status!==200) return;
         setTipodocu(resul.data);
    };
@@ -63,7 +63,7 @@ function GestionAsesores() {
 
    //carga de asesores
    const cargaAsesores = async() => {
-      const resul = await getAsesores({act:0});
+      const resul = await getAsesores({act:0}, user.token);
       if(resul.status!==200) {
           toast.error("Ocurrio un error al consultar asesores");
           return;
@@ -81,7 +81,7 @@ function GestionAsesores() {
   
    //ocurre cuando se selecciona un asesor para su edicion
    const seleccionarAsesor = async(id) => {
-      const resul = await getAsesorById(id);
+      const resul = await getAsesorById(id, user.token);
       if(!resul.status==200) return;
       const registro = resul.data;
       const dpt = registro.gnr_tercero.gnr_ciudad.departamento_id;
@@ -142,7 +142,7 @@ function GestionAsesores() {
 
    //cambiar de estado un asesor
    const  cambiaEstadoAsesor = async(id) => {
-      const resul = await toggleAsesor(id);
+      const resul = await toggleAsesor(id, user.token);
       if(!resul.status==200) {
          toast.error("Ocurrio un error al actualizar estado del asesor");
          return;
@@ -198,7 +198,7 @@ function GestionAsesores() {
       };
       if(idtercero==0) {
          //creamos el tercero
-         const resul1 = await saveTercero(datosTercero);
+         const resul1 = await saveTercero(datosTercero, user.token);
          if(!resul1.status==200) {
             toast.error("Ocurrio un error al actualizar el tercero");
             return;
@@ -207,7 +207,7 @@ function GestionAsesores() {
          idtercero = tercero.id;
       } else {
          //actualizamos el tercero
-         const resul2 = await updateTercero(datosTercero, idtercero);
+         const resul2 = await updateTercero(datosTercero, idtercero, user.token);
          if(!resul2.status==200) {
             toast.error("Ocurrio un error al actualizar el tercero");
             return;
@@ -220,7 +220,7 @@ function GestionAsesores() {
          out_activo: selectedAsesor.activo,
       };
       if(selectedAsesor.id==0) {
-         const resul3 = await saveAsesor(datosAsesor);
+         const resul3 = await saveAsesor(datosAsesor, user.token);
          if(!resul3.status==200) {
             toast.error("Ocurrio un error al actualizar asesor");
             return;

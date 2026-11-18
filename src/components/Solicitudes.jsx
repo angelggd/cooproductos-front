@@ -65,7 +65,7 @@ function Solicitudes() {
 
    //ocurre cuando seleccionamos una solicitud para su seguimiento
    const seleccionarSolicitud = async(id) => {
-      const resul = await getSolicitudById(id);
+      const resul = await getSolicitudById(id, user.token);
       if(resul.status!==200) {
          toast.error("Ocurrio un error al cargar la solicitud");
          return;
@@ -108,7 +108,7 @@ function Solicitudes() {
    //carga de seguimiento de ordenes
    const cargaSeguimientos = async() => {
       const id = solicitud.id;
-      const resul = await getSeguimiento(id);
+      const resul = await getSeguimiento(id, user.token);
       if(resul.status!==200) {
          toast.error("Ocurrio un error al cargar los seguimientos de la solicitud")
          return;
@@ -169,7 +169,7 @@ function Solicitudes() {
          const datos = resul.data;
          setSolicitud({...solicitud, sol_estado:datos.estado});
       } else {
-         const resul = await updateSeguimiento(registro, id);
+         const resul = await updateSeguimiento(registro, id, user.token);
          if(resul.status!==200) {
             toast.error("Ocurrio un error al actualizar seguimiento");
             return;

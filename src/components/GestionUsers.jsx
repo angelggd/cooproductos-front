@@ -28,7 +28,7 @@ function GestionUsers() {
 
     //cargue de dptos
     const cargarDptos = async(id) => {
-         const resul = await getDptos(id);
+         const resul = await getDptos(id, user.token);
          if(resul.status!==200) return;
          setDptos(resul.data);
          setCiudades([]);
@@ -36,20 +36,20 @@ function GestionUsers() {
  
     //cargue de ciudades
     const cargarCiudades = async(id) => {
-         const resul = await getCiudades(id);
+         const resul = await getCiudades(id, user.token);
          setCiudades(resul.data);
     };
  
     //cargar tipo de documento
     const cargarTipodoc = async() => {
-         const resul = await getTipodoc();
+         const resul = await getTipodoc(user.token);
          if(resul.status!==200) return;
          setTipodocu(resul.data);
     };
 
     //carga de rolles
     const cargarRolles = async() => {
-      const resul = await getRolles();
+      const resul = await getRolles(user.token);
       if(!resul.status==200) return;
       setRolles(resul.data);
     };
@@ -82,7 +82,7 @@ function GestionUsers() {
 
     //funcion que carga los usuarios
     const cargaUsuarios = async(query) => {
-        const result1 = await countUsers(query);
+        const result1 = await countUsers(query, user.token);
         if(!result1.status==200) {
            toast.error("Ocurrio un error al ejecutar el conteo de los registros");
            return;
@@ -93,7 +93,7 @@ function GestionUsers() {
         const xp = calc * 20 < treg ? calc + 1 : calc; 
         setPaginacion({totregistros: treg, totpaginas: xp});
 
-        const result2 = await getUsers(query);
+        const result2 = await getUsers(query, user.token);
         if(!result2.status==200) {
            toast.error("Error al cargar los registros");
            return;
@@ -121,7 +121,7 @@ function GestionUsers() {
 
     //cambiar de estado un usuario
     const  cambiaEstadoUser = async(id) => {
-           const resul = await toggleUser(id);
+           const resul = await toggleUser(id, user.token);
            if(!resul.status==200) {
               toast.error("Ocurrio un error al actualizar estado del Usuario");
               return;
@@ -133,7 +133,7 @@ function GestionUsers() {
    
     //ocurre cuando se selecciona un usuario para su edicion
     const seleccionarUsuario = async(id) => {
-       const resul = await getUserById(id);
+       const resul = await getUserById(id, user.token);
        if(!resul.status==200) return;
        const registro = resul.data;
        const dpt = registro.gnr_tercero.gnr_ciudad.departamento_id;
@@ -272,7 +272,7 @@ function GestionUsers() {
        };
        if(idtercero==0) {
           //creamos el tercero
-          const resul1 = await saveTercero(datosTercero);
+          const resul1 = await saveTercero(datosTercero, user.token);
           if(!resul1.status==200) {
              toast.error("Ocurrio un error al actualizar el tercero");
              return;
@@ -281,7 +281,7 @@ function GestionUsers() {
           idtercero = tercero.id;
        } else {
           //actualizamos el tercero
-          const resul2 = await updateTercero(datosTercero, idtercero);
+          const resul2 = await updateTercero(datosTercero, idtercero, user.token);
           if(!resul2.status==200) {
              toast.error("Ocurrio un error al actualizar el tercero");
              return;
@@ -297,13 +297,13 @@ function GestionUsers() {
           usu_login: selectedUser.email,
        };
        if(selectedUser.id==0) {
-          const resul3 = await saveUser(datosUsuario);
+          const resul3 = await saveUser(datosUsuario, user.token);
           if(!resul3.status==200) {
              toast.error("Ocurrio un error al actualizar usuario");
              return;
           };
        } else {
-          const resul4 = await updateUser(datosUsuario, selectedUser.id);
+          const resul4 = await updateUser(datosUsuario, selectedUser.id, user.token);
           if(!resul4.status==200) {
              toast.error("Ocurrio un error al actualizar Usuario");
              return;
@@ -333,7 +333,7 @@ function GestionUsers() {
           toast.warning("Las claves digitadas no coinciden");
        };
        const datos = {password:selectedUser.clave1};
-       const resul = await cambiarClaveUser(datos, selectedUser.id);
+       const resul = await cambiarClaveUser(datos, selectedUser.id, user.token);
        if(!resul.status==200) {
           toast.error("Ocurrio un error la intentar cambiar la clave");
           return;

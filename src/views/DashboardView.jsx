@@ -10,6 +10,8 @@ import Estadisticas from '../components/Estadisticas';
 import GestionAsesores from '../components/GestionAsesores';
 import GestionVendedores from '../components/GestionVendedores';
 import GestionClientes from '../components/GestionClientes';
+import GestionTasas from '../components/GestionTasas';
+import GestionPagadurias from '../components/GestionPagadurias';
 
 
 export default function DashboardView() {
@@ -41,6 +43,8 @@ export default function DashboardView() {
     { id: 'asesores', label: 'Gestión de Asesores', roll:2 },
     { id: 'vendedores', label: 'Gestión de Vendedores', roll:2 },
     { id: 'clientes', label: 'Gestión de Clientes', roll:4},
+    { id: 'tasas', label: 'Gestión de Tasas', roll:2},
+    { id: 'pagadurias', label: 'Gestión de Pagadurías', roll:2},
   ];
 
   const cargarMenu = () => {
@@ -80,10 +84,18 @@ export default function DashboardView() {
 
   const onLogout = () => {
     console.log('saliendo...')
-    logout()
-    navigate('/auth')
-
-  }
+    //logout()
+    const xlogin = {
+         id: 0, 
+         username: "",
+         roll_id: 0,
+         rol: "",
+         tercero_id: 0,
+         token: ""
+     };
+     localStorage.setItem("user", JSON.stringify(xlogin));
+     navigate("/");
+  };
 
   return (
     <div className="flex h-screen bg-background text-gray-800 font-sans">
@@ -187,7 +199,7 @@ export default function DashboardView() {
             </div>
 
             <button
-              onClick={onLogout}
+              onClick={()=>onLogout()}
               className="px-3 py-2 text-xs sm:text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200"
             >
               Cerrar Sesión
@@ -250,6 +262,16 @@ export default function DashboardView() {
            {/* VISTA 7: Clientes */}
             {activeView === 'clientes' && (
               <GestionClientes/>
+            )}
+
+           {/* VISTA 8: Tasas */}
+            {activeView === 'tasas' && (
+              <GestionTasas/>
+            )}
+
+           {/* VISTA 9: Pagadurias */}
+            {activeView === 'pagadurias' && (
+              <GestionPagadurias/>
             )}
 
           </div>

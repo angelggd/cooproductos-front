@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { getParametroByCod } from '../services/srvGenerales';
 
 export default function CreditSimulator() {
+  const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const [monto, setMonto] = useState(null);
   const [meses, setMeses] = useState(10);
@@ -22,7 +23,7 @@ export default function CreditSimulator() {
      const anual = hoy.getFullYear();
      const mes = hoy.getMonth() + 1;
      const query = {tas_anual:anual, tas_mes:mes};
-     const resul = await getTasaByPeriodo(query);
+     const resul = await getTasaByPeriodo(query, user.token);
    
      if(resul.status!==200) {
         toast.error("Error al consultar la tasa efectiva anual");
@@ -41,7 +42,7 @@ export default function CreditSimulator() {
 
   //cargue de los modelos de creditos activos
   const cargarModelos = async() => {
-      const resul = await getModelos({act:1});
+      const resul = await getModelos({act:1}, user.token);
       if(resul.status!==200) {
          toast.error("Ocurrio un error al cargar los modelos de credito");
          return;
@@ -51,7 +52,7 @@ export default function CreditSimulator() {
 
   //cargue de la utilidad
   const cargarUtilidad = async() => {
-     const resul = await getParametroByCod({codigo:"001"});
+     const resul = await getParametroByCod({codigo:"001"}, user.token);
      if(resul.status!==200) {
         toast.error("Ocurrio un error al cargar el parametro 001");
         return;

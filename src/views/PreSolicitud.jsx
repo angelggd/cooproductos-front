@@ -31,14 +31,14 @@ function PreSolicitud() {
     
     //cargar tipo de documento
     const cargarTipodoc = async() => {
-        const resul = await getTipodoc();
+        const resul = await getTipodoc(user.token);
         if(resul.status!==200) return;
         setTipodocu(resul.data);
     };
 
     //FUNCION QUE CARGA EL PARAMETRO DE ALOJAMIENTO DEL LINK DE DATACREDITO
     const cargaLink = async() => {
-        const resul = await getParametroByCod({codigo:"003"});
+        const resul = await getParametroByCod({codigo:"003"}, user.token);
         if(resul.status!==200) {
            toast.error("Ocurrio un error al cargar el parametro 003");
            return "";
@@ -136,7 +136,7 @@ function PreSolicitud() {
 
     const seguirSolicitud = () => {
         if(cliente.robot==0) {
-           toast.warning("Roboto detectado");
+           toast.warning("Robot detectado");
            return;
         };
         if(validaI!==3) return;

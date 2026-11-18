@@ -13,5 +13,4 @@ export const endpoints = {
    reportes: `${BASE_URL}/reportes`,
    asesores: `${BASE_URL}/vendedores/asesor`,
    upload: `${BASE_URL}/upload`,
-
 };

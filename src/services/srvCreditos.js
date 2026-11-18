@@ -77,3 +77,80 @@ export const getModelos = async(query, token) => {
     }
 };
 
+
+//esta funcion devuelve el numero de registros de las tasas
+export const conteoTasas = async(token) => {
+    try {
+        const response = await fetch(`${endpoints.creditos}/tasas/count`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+
+//esta funcion devuelve los registros de las tasas
+export const getTasas = async(query, token) => {
+    const { lim, npag } = query;
+    try {
+        const response = await fetch(`${endpoints.creditos}/tasas?lim=${lim}&npag=${npag}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+
+//esta funcion guarda nueva tasa
+export const saveTasa = async(datos, token) => {
+    try {
+        const response = await fetch(`${endpoints.creditos}/tasas`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+            body: JSON.stringify(datos)
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+//esta funcion guarda nueva tasa
+export const updateTasa = async(datos, id, token) => {
+    try {
+        const response = await fetch(`${endpoints.creditos}/tasas/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+            body: JSON.stringify(datos)
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};

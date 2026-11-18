@@ -8,6 +8,7 @@ import { infoSolicitudes } from '../services/srvSolicitudes';
 import GraficoBarras from "./GraficoBarras";
 
 function Estadisticas() {
+     const user = JSON.parse(localStorage.getItem("user"));
      const [solicitudes, setSolicitudes] = useState({activas:0, aprobadas:0, rechazadas:0});
      const [solMes, setSolMes] = useState({activas:0, aprobadas:0, rechazadas:0});
      const [resumen, setResumen] = useState({activas:[], aprobadas:[], rechazadas:[]});
@@ -18,7 +19,7 @@ function Estadisticas() {
         const mes = fecha.getMonth()+1;
         const anual = fecha.getFullYear();
 
-        const resul = await infoSolicitudes({anual});
+        const resul = await infoSolicitudes({anual}, user.token);
         if(resul.status!==200) return;
         const datos = resul.data;
         const apro = datos.filter(ele=>ele.sol_estado==3);
