@@ -105,18 +105,25 @@ export default function DashboardView() {
       {/* ========================================================= */}
       <aside
         className={`
-          fixed lg:static inset-y-0 left-0 z-40 w-64 bg-primary text-white flex flex-col justify-between
+          fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white text-primary flex flex-col justify-between
           ${showMobileMenu ? 'block' : 'hidden lg:flex'}
         `}
       >
         <div>
           {/* Logo superior */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-white">
+               <img 
+                   src="/logocop.png" /* Reemplaza 'logo.png' por el nombre y extensión exactos (ej. .svg, .png) */
+                   alt="Logo CooProductos" 
+                   className="h-10 sm:h-12 w-auto cursor-pointer object-contain" 
+               />
+              {/*} 
               <span className="w-8 h-8 rounded bg-accent flex items-center justify-center font-bold text-white">
                 C
               </span>
               <span className="font-bold text-lg tracking-wide">CooProductos</span>
+              */}
             </div>
 
             {/* Botón X solo visible en móviles para cerrar */}
@@ -144,7 +151,7 @@ export default function DashboardView() {
                   className={`w-full text-left px-4 py-3 rounded text-sm font-medium transition-colors ${
                     isSelected
                       ? 'bg-accent text-white font-bold'
-                      : 'text-gray-200 hover:bg-secondary'
+                      : 'text-gray-400 hover:bg-secondary'
                   }`}
                 >
                   {item.label}

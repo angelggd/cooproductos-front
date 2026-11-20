@@ -130,7 +130,8 @@ function GestionClientes() {
  
     //cargue de pagadurias
     const cargarPagadurias = async() => {
-        const resul = await getPagadurias({act:1}, user.token);
+        const query = {pag:false, lim:20, npag:1, act:1};
+        const resul = await getPagadurias(query, user.token);
         if(resul.status!==200) return;
         setPagadurias(resul.data);
     };

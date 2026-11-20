@@ -19,24 +19,6 @@ export const getTasaByPeriodo = async(query, token) => {
     }
 };
 
-//esta funcion devuelve las pagadurias en convenio
-export const getPagadurias = async(query, token) => {
-    const {act} = query;
-    try {
-        const response = await fetch(`${endpoints.creditos}/pagadurias?act=${act}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "token": token,
-            },
-        });
-        const data = await response.json();
-        return {status: 200, data}
-    } catch (error) {
-        console.log("Error",JSON.stringify(error))
-        return { status: 600, message: "Unhandler error", error: error }
-    }
-};
 
 
 //esta funcion devuelve los vendedores
@@ -154,3 +136,80 @@ export const updateTasa = async(datos, id, token) => {
         return { status: 600, message: "Unhandler error", error: error }
     }
 };
+
+//esta funcion devuelve el numero de registros de las pagadurias
+export const conteoPagadurias = async(token) => {
+    try {
+        const response = await fetch(`${endpoints.creditos}/pagadurias/count`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+//esta funcion devuelve las pagadurias en convenio
+export const getPagadurias = async(query, token) => {
+    const {pag, lim, npag, act} = query;
+    try {
+        const response = await fetch(`${endpoints.creditos}/pagadurias?pag=${pag}&act=${act}&lim=${lim}&npag=${npag}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+
+//esta funcion guarda nueva pagaduria
+export const savePagaduria = async(datos, token) => {
+    try {
+        const response = await fetch(`${endpoints.creditos}/pagadurias`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+            body: JSON.stringify(datos)
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
+
+//esta funcion cambia estado pagaduria
+export const togglePagaduria = async(id, token) => {
+    try {
+        const response = await fetch(`${endpoints.creditos}/pagadurias/toggle/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "token": token,
+            },
+        });
+        const data = await response.json();
+        return {status: 200, data}
+    } catch (error) {
+        console.log("Error",JSON.stringify(error))
+        return { status: 600, message: "Unhandler error", error: error }
+    }
+};
+
